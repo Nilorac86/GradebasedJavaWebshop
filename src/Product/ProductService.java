@@ -2,6 +2,7 @@ package Product;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 // En klass vars enda ansvar är att skicka queris till databasen och hantera svaren.
 public class ProductService {
@@ -80,4 +81,16 @@ public class ProductService {
     public Product getProductById(int productId) throws SQLException{
         return productRepository.getProductById(productId);
     }
+
+    public ArrayList<Product> getProductByFilter(String category, double maxPrice) {
+
+        ArrayList<Product> products = productRepository.getProductsByFilter(category, maxPrice);
+
+
+        return (ArrayList<Product>) products.stream()
+                .filter(p -> p.getCategoryName().toLowerCase().contains(category.toLowerCase()))
+                .filter(p -> p.getPrice() <= maxPrice)
+                .collect(Collectors.toList());
+    }
 }
+

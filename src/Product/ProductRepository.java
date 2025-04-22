@@ -172,4 +172,39 @@ public class ProductRepository {
         }
     }
 
+    public ArrayList<Product> getProductsByFilter(String category, double maxPrice) {
+        ArrayList<Product> products = new ArrayList<>();
+        String sql = "SELECT categories.name AS categoryName, products.*\n" +
+                "                FROM products \n" +
+                "                JOIN products_categories ON products.product_id = products_categories.product_id\n" +
+                "                JOIN categories ON products_categories.category_id = categories.category_id WHERE categories.name LIKE ? AND price <= ?;";
+
+        try (Connection conn = DriverManager.getConnection(URL);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+
+            stmt.setString(1, "%" + category + "%");
+            stmt.setDouble(2, maxPrice);
+
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+
+                int productId = rs.getInt("product_id");
+                String name = rs.getString("name");
+                String description = rs.getString("description");
+                double price = rs.getDouble("price");
+                int stockQuantity = rs.getInt("stock_quantity");
+                String categoryName = rs.getString("categoryName");
+
+                // Skapa en produkt och lägg till den i listan
+                products.add(new Product(productId, name, description, price, stockQuantity, categoryName));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return products;
+    }
 }
+

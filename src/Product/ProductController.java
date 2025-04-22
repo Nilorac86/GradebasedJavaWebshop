@@ -30,6 +30,9 @@ public class ProductController {
                     searchProductByCategory(scanner);
                     break;
                 case "4":
+                    getProductsByFilter(scanner);
+                    break;
+                case "5":
                     if (orderController == null){
                         orderController = new OrderController();
                     }
@@ -92,7 +95,8 @@ public class ProductController {
         System.out.println("1. Hämta alla produkter");
         System.out.println("2. Sök produkt efter produktnamn");
         System.out.println("3. Sök produkt efter kategori");
-        System.out.println("4. Gå tillbaka till order");
+        System.out.println("4. Sök på produkt efter kategori och maxpris");
+        System.out.println("5. Gå tillbaka till order");
         System.out.println("0. Logga ut");
         System.out.println("9. Avsluta hela programmet");
         System.out.println("Välj ett alternativ:");
@@ -185,20 +189,6 @@ public class ProductController {
     }
 
 
-//    public void placeOrder(int productId, int quantityOrdered) throws SQLException {
-//        Product product = productRepository.getProductById(productId); // Hämta nuvarande produkt
-//        int currentStock = product.getStockQuantity();
-//
-//        if (currentStock >= quantityOrdered) {
-//            int newStock = currentStock - quantityOrdered;
-//            updateStockQuantity(productId, newStock); // Uppdatera lagersaldo
-//            orderRepository.createOrder(productId, quantityOrdered); // Skapa själva ordern
-//            System.out.println("Order lagd!");
-//        } else {
-//            System.out.println("Inte tillräckligt i lager.");
-//        }
-//    }
-
     private void insertProduct(Scanner scanner) {
         System.out.println("Ange namn på produkten:");
         String name = scanner.nextLine();
@@ -258,5 +248,23 @@ public class ProductController {
             throw new RuntimeException(e);
         }
 
+    }
+    private void getProductsByFilter(Scanner scanner) {
+        System.out.println("Ange kategori ");
+        String category = scanner.nextLine();
+
+        System.out.println("Ange maxpris: ");
+        double maxPrice = scanner.nextDouble();
+        scanner.nextLine();
+
+        ArrayList<Product> filteredProducts = productService.getProductByFilter(category, maxPrice);
+
+
+        if (filteredProducts.isEmpty()) {
+            System.out.println("Inga produkter matchar dina filter.");
+        } else {
+            System.out.println("Filtrerade produkter:");
+            filteredProducts.forEach(p -> System.out.println("Product: " + p.getName() + ",  " + "Pris: " + p.getPrice() + " kr"));
+        }
     }
 }
