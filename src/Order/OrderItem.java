@@ -48,7 +48,6 @@ public class OrderItem {
         return "ProductId: " + product.getProductId() +
                 "Product: " + product.getName() +
                 "Antal: " + quantity +
-                "Enhetspris: " + unitPrice +
-                "Total summa: " + getTotalPrice();
+                "Enhetspris: " + unitPrice;
     }
 }

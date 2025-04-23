@@ -1,8 +1,9 @@
 package Customer;
 import Order.OrderController;
+import Presentation.MainController;
+import Review.ReviewController;
 import Session.SessionManager;
 import User.UserController;
-import org.sqlite.core.CoreDatabaseMetaData;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -13,6 +14,8 @@ public class CustomerController extends UserController {
     private CustomerRepository customerRepository = new CustomerRepository();
     private CustomerService customerService = new CustomerService();
     private OrderController orderController = new OrderController();
+    private MainController mainController;
+    private ReviewController reviewController = new ReviewController();
 
 
 
@@ -90,6 +93,8 @@ public class CustomerController extends UserController {
                     break;
                 case "4":
                     orderController.runMeny();
+                case "5":
+                    reviewController.runMenu();
                 case "0":
                     SessionManager.getInstance().logout();
                     running = false;
@@ -123,6 +128,7 @@ public class CustomerController extends UserController {
         System.out.println("2. Uppdatera din email");
         System.out.println("3. Radera konto");
         System.out.println("4. Hantera order");
+        System.out.println("5. Reviews meny");
         System.out.println("0. Logga ut");
         System.out.println("9. Avsluta hela programmet");
         System.out.println("Välj ett alternativ:");
@@ -188,6 +194,11 @@ public class CustomerController extends UserController {
             throw new RuntimeException(e);
         }
         System.out.println(deleteSuccess ? "Kund raderad " : "Kund hittades ej");
+        SessionManager.getInstance().logout();
+        if (mainController == null) {
+            mainController = new MainController();
+        }
+        mainController.runMainMenu();
         return deleteSuccess;
     }
 

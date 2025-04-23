@@ -2,9 +2,12 @@ package Presentation;
 
 import Admin.AdminController;
 import Customer.CustomerController;
+import Order.OrderController;
+import Product.ProductController;
 import Session.SessionManager;
 
 import java.sql.SQLException;
+import java.sql.SQLOutput;
 import java.util.Scanner;
 
     public class MainController {
@@ -12,6 +15,8 @@ import java.util.Scanner;
         private final LoginController loginController = new LoginController();
         private final CustomerController customerController = new CustomerController();
         private final AdminController adminController = new AdminController();
+        private final ProductController productController = new ProductController();
+        private final OrderController orderController = new OrderController();
 
         private int loggedInUserId;
         private String role;
@@ -64,8 +69,8 @@ import java.util.Scanner;
                         break;
 
                     case "0":
-                        System.out.println("Programmet avslutas.");
-                        running = false;
+                        System.exit(0);
+                        System.out.println("Programmet avslutas");
                         break;
 
                     default:
@@ -78,7 +83,100 @@ import java.util.Scanner;
             if ("admin".equalsIgnoreCase(role)) {
                 adminController.runAdminMenu();
             } else if ("customer".equalsIgnoreCase(role)) {
-                customerController.runCustomerMeny();
+                mainCustomerMenu();
+            }
+        }
+
+        public void mainCustomerMenu() {
+            Scanner scanner = new Scanner(System.in);
+            boolean running = true;
+
+            while (running) {
+                System.out.println("=== HUVUDMENY KUND ===");
+                System.out.println("1. Kund meny");
+                System.out.println("2. Produkt meny");
+                System.out.println("3. Order Meny");
+                System.out.println("0. Logga ut");
+                System.out.println("9. Avsluta programmet");
+                System.out.print("Välj ett alternativ: ");
+
+                String select = scanner.nextLine();
+                try {
+                switch (select) {
+                    case "1":
+                       customerController.runCustomerMeny();
+                       break;
+
+                    case "2":
+                       productController.runMeny();
+                        break;
+                    case "3":
+                        orderController.runMeny();
+                        break;
+                    case "0":
+                        SessionManager.getInstance().logout();
+                        running = false;
+                        break;
+                    case "9":
+                        System.exit(0);
+                        System.out.println("Programmet avslutas");
+                        break;
+
+                    default:
+                        System.out.println("Ogiltigt val.");
+
+                }
+
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+
+        public void mainAdminMenu() {
+            Scanner scanner = new Scanner(System.in);
+            boolean running = true;
+
+            while (running) {
+                System.out.println("=== HUVUDMENY KUND ===");
+                System.out.println("1. Kund meny");
+                System.out.println("2. Produkt meny");
+                System.out.println("3. Order Meny");
+                System.out.println("0. Logga ut");
+                System.out.println("9. Avsluta programmet");
+                System.out.print("Välj ett alternativ: ");
+
+                String select = scanner.nextLine();
+                try {
+                    switch (select) {
+                        case "1":
+                            customerController.runAdminMeny();
+                            break;
+
+                        case "2":
+                            productController.runAdminMeny();
+                            break;
+                        case "3":
+                            orderController.runAdminMeny();
+                            break;
+                        case "0":
+                            SessionManager.getInstance().logout();
+                            running = false;
+                            break;
+                        case "9":
+                            System.exit(0);
+                            System.out.println("Programmet avslutas");
+                            break;
+
+                        default:
+                            System.out.println("Ogiltigt val.");
+
+                    }
+
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }

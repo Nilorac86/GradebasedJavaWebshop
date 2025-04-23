@@ -27,6 +27,11 @@ public class Product {
         this.stockQuantity = stockQuantity ;
     }
 
+    public Product( int productId, String name){
+        this.productId = productId;
+        this.name = name;
+    }
+
     public int getStockQuantity() {
         return stockQuantity;
     }

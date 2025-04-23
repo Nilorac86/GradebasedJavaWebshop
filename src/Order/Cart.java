@@ -28,11 +28,11 @@ import java.util.HashMap;
 
         // Beräkna totalpriset för kundvagnen
         public double totalPriceCart() {
-            double total = 0;
+            double totalPrice = 0;
             for (CartItem item : cartItems.values()) {
-                total += item.getProduct().getPrice() * item.getQuantity();
+                totalPrice += item.getProduct().getPrice() * item.getQuantity();
             }
-            return total;
+            return totalPrice; // Rätt variabel returneras nu
         }
 
         // Visa alla produkter i kundvagnen

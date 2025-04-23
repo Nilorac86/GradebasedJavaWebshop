@@ -1,6 +1,5 @@
 package User;
-import Admin.Admin;
-import Customer.Customer;
+
 
 import java.sql.Connection;
 import java.sql.DriverManager;

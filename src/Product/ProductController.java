@@ -58,7 +58,7 @@ public class ProductController {
         boolean running = true;
         while (running) {
 
-            String select = productMeny(scanner);
+            String select = productAdminMeny(scanner);
 
             switch (select) {
                 case "1":

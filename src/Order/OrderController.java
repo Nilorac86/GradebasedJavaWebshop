@@ -1,4 +1,5 @@
 package Order;
+import Customer.CustomerController;
 import Product.Product;
 import Product.ProductController;
 import Product.ProductService;
@@ -12,6 +13,7 @@ import java.util.Scanner;
     public class OrderController {
         private ProductService productService = new ProductService();
         private ProductController productController = new ProductController();
+        private CustomerController customerController;
 
         private Cart cart = new Cart();
         private OrderService orderService = new OrderService();
@@ -45,6 +47,12 @@ import java.util.Scanner;
                         break;
                     case"7":
                         productController.runMeny();
+                    case "8":
+                        if (customerController == null){
+                            customerController = new CustomerController();
+                        }
+                        customerController.runCustomerMeny();
+                        break;
                     case "0":
                         SessionManager.getInstance().logout(); // Logga ut användaren
                         System.out.println("Du har loggats ut.");
@@ -92,14 +100,15 @@ import java.util.Scanner;
 
 
         private static String orderMenu(Scanner scanner) {
-            System.out.println("Orderhantering meny");
+            System.out.println("Order meny");
             System.out.println("1. Lägga produkter i kundvagn");
             System.out.println("2. Ta bort produkt från kundvagn");
             System.out.println("3. Ändra antal produkter i kundvagn");
             System.out.println("4. Lägga order");
             System.out.println("5. Visa kundvagn");
             System.out.println("6. Se dina ordrar");
-            System.out.println("7. Se alla produkter");
+            System.out.println("7. Produktmeny");
+            System.out.println("8. Kund meny");
             System.out.println("0. Logga ut");
             System.out.println("9. Avsluta hela programmet!");
             System.out.println("Välj ett alternativ:");
@@ -131,27 +140,36 @@ import java.util.Scanner;
             }
         }
 
+
         private void getLoggedInCustomerOrders() {
             ArrayList<Order> orders = orderService.getLoggedInCustomerOrders();
 
-            // Iterera över alla ordrar
             for (Order order : orders) {
-                // Skriv ut orderdatum
                 System.out.println("Order ID: " + order.getOrderId());
                 System.out.println("Order Datum: " + order.getOrderDate());
                 System.out.println("Produkter i denna order:");
 
-                for (OrderItem oi : order.getItems()) {
+                double orderTotal = 0; // Här sparas totalpriset för ordern
 
-                    System.out.printf("Produkt: %s | Beskrivning: %s | Antal: %d | Enhetspris: %.2f\n",
+                for (OrderItem oi : order.getItems()) {
+                    double itemTotal = oi.getTotalPrice(); // eller oi.getQuantity() * oi.getUnitPrice()
+                    orderTotal += itemTotal;
+
+                    System.out.printf("Produkt: %s | Beskrivning: %s | Antal: %d | Enhetspris: %.2f | Summa: %.2f \n",
                             oi.getProduct().getName(),
                             oi.getProduct().getDescription(),
                             oi.getQuantity(),
-                            oi.getUnitPrice());
+                            oi.getUnitPrice(),
+                            itemTotal);
                 }
+
+                // Skriv ut totalpriset efter att alla orderrader visats
                 System.out.println("----------------------------------");
+                System.out.printf("Total summa för ordern: %.2f kr\n", orderTotal);
+                System.out.println("----------------------------------------------------------------------");
             }
         }
+
 
 
         private void getCustomerOrdersById(Scanner scanner) {
@@ -183,7 +201,7 @@ import java.util.Scanner;
             }
         }
 
-        public void createOrderFromCart() throws SQLException {
+        private void createOrderFromCart() throws SQLException {
             int customerId = SessionManager.getInstance().getLoggedInUserId();
 
             if (customerId == -1) {
@@ -201,6 +219,8 @@ import java.util.Scanner;
                 return;
             }
 
+            double totalPrice = cart.totalPriceCart();
+
             Order order = new Order(customerId, new java.util.Date(), orderItems);
             int orderId = orderService.createOrder(order); // returnerar genererat ID
 
@@ -215,6 +235,7 @@ import java.util.Scanner;
 
                 }
                 System.out.println("Ordern är lagd! Order ID: " + orderId);
+                System.out.println("Total summa: " + totalPrice);
                 cart.clearCart();
             } else {
                 System.out.println("Kunde inte skapa order.");
@@ -235,7 +256,7 @@ import java.util.Scanner;
                 Product product = productService.getProductById(productId);
                 if (product != null) {
 
-                    if (product.getStockQuantity() >= 0) {
+                    if (product.getStockQuantity() >= quantity) {
                         cart.addProduct(product, quantity); // <-- korrekt här
                         System.out.println("Produkten har lagts till i kundvagnen.");
 
