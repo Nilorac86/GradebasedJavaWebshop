@@ -14,7 +14,6 @@ import java.util.Scanner;
 
         private LoginController loginController = new LoginController();
         private CustomerController customerController = new CustomerController();
-        private AdminController adminController = new AdminController();
         private ProductController productController = new ProductController();
         private OrderController orderController = new OrderController();
         private ReviewController reviewController = new ReviewController();

@@ -29,7 +29,7 @@ public class ReviewController {
             System.out.println("0. Logga ut");
             System.out.println("9. Avsluta programmet");
             System.out.println("Välj ett alternativ:");
-            System.out.println();
+
 
             String select = scanner.nextLine();
 
@@ -69,11 +69,12 @@ public class ReviewController {
         ArrayList<Review> reviews = reviewService.getCustomerReviews();
 
         if (reviews.isEmpty()) {
-            System.out.println("Du har inga recensioner än.");
+            System.out.println("Du har inte lämnat någon recension än.");
+            System.out.println();
             return;
         }
 
-        System.out.println("Dina recensioner:");
+        System.out.println("=== DINA RECENSIONER ===");
         for (Review review : reviews) {
             System.out.println("----------------------------------");
             System.out.println("Produkt: " + review.getProduct().getName());
@@ -89,18 +90,21 @@ public class ReviewController {
         int customerId = SessionManager.getInstance().getLoggedInUserId();
         if (customerId == -1) {
             System.out.println("Ingen kund är inloggad.");
+            System.out.println();
             return;
         }
 
         ArrayList<Order> orders = orderService.getLoggedInCustomerOrders();
         if (orders.isEmpty()) {
             System.out.println("Du har inga ordrar.");
+            System.out.println();
             return;
         }
 
         System.out.println("Dina ordrar:");
         for (Order order : orders) {
             System.out.println("Order ID: " + order.getOrderId() + " | Datum: " + order.getOrderDate());
+            System.out.println();
         }
 
         System.out.print("Ange Order ID för produkten du vill recensera: ");
@@ -116,7 +120,7 @@ public class ReviewController {
         }
 
         if (selectedOrder == null) {
-            System.out.println("Ogiltigt order-ID.");
+            System.out.println("Ogiltigt order-ID. Skriv in ditt order-ID");
             return;
         }
 

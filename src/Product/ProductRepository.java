@@ -1,7 +1,4 @@
 package Product;
-
-import Customer.Customer;
-
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -172,39 +169,44 @@ public class ProductRepository {
         }
     }
 
-    public ArrayList<Product> getProductsByFilter(String category, double maxPrice) {
+    public ArrayList<Product> getProductsByFilter(String category, String productName,  double maxPrice) {
         ArrayList<Product> products = new ArrayList<>();
+
         String sql = "SELECT categories.name AS categoryName, products.*\n" +
                 "                FROM products \n" +
                 "                JOIN products_categories ON products.product_id = products_categories.product_id\n" +
-                "                JOIN categories ON products_categories.category_id = categories.category_id WHERE categories.name LIKE ? AND price <= ?;";
+                "                JOIN categories ON products_categories.category_id = categories.category_id WHERE " +
+                "                categories.name LIKE ? OR products.name LIKE ? OR price <= ?  ;";
 
         try (Connection conn = DriverManager.getConnection(URL);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
 
-            stmt.setString(1, "%" + category + "%");
-            stmt.setDouble(2, maxPrice);
+            pstmt.setString(1, "%" + category + "%");
+            pstmt.setString(2, "%" + productName + "%");
+            pstmt.setDouble(3, maxPrice);
 
 
-            ResultSet rs = stmt.executeQuery();
+            ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
+                products.add(new Product(rs.getInt("product_id"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        rs.getDouble("price"),
+                        rs.getInt("stock_quantity"),
+                        rs.getString("categoryName")));
 
-                int productId = rs.getInt("product_id");
-                String name = rs.getString("name");
-                String description = rs.getString("description");
-                double price = rs.getDouble("price");
-                int stockQuantity = rs.getInt("stock_quantity");
-                String categoryName = rs.getString("categoryName");
 
-                // Skapa en produkt och lägg till den i listan
-                products.add(new Product(productId, name, description, price, stockQuantity, categoryName));
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+      } catch (SQLException e) {
+
         }
         return products;
     }
 }
 
+//         System.out.println("SQL Error: " + e.getMessage());  // Skriv ut själva felmeddelandet
+//            System.out.println("SQL State: " + e.getSQLState());  // Skriv ut SQL-state-koden
+//            System.out.println("Error Code: " + e.getErrorCode());  // Skriv ut specifika SQL-felkoder
+//            e.printStackTrace();;

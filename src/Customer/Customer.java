@@ -16,9 +16,9 @@ public class Customer extends User {
     }
 
 
-    public Customer(int customerId, String name) {
-    super(customerId, name, null, null); // skicka null för email och password
-    }
+//    public Customer(int customerId, String name) {
+//    super(customerId, name, null, null); // skicka null för email och password
+//    }
 
 
 

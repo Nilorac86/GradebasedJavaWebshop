@@ -2,18 +2,18 @@ package Order;
 
 import Presentation.MainController;
 import Product.Product;
-import Product.ProductController;
 import Product.ProductService;
 import Session.SessionManager;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import Product.ProductController;
 
 
     public class OrderController {
-        private  ProductController productController = new ProductController();
         private final ProductService productService = new ProductService();
+        public ProductController productController;
         private  MainController mainController;
 
         private final Cart cart = new Cart();
@@ -28,6 +28,7 @@ import java.util.Scanner;
             boolean running = true;
             while (running){
 
+
                 System.out.println("=== ORDERMENY ===");
                 System.out.println("1. Se dina ordrar ");
                 System.out.println("2. Gå till kundvagn");
@@ -35,7 +36,7 @@ import java.util.Scanner;
                 System.out.println("0. Logga ut");
                 System.out.println("9. Avsluta programmet!");
                 System.out.println("Välj ett alternativ:");
-                System.out.println();
+
 
                 String select = scanner.nextLine();
 
@@ -51,7 +52,6 @@ import java.util.Scanner;
                             mainController = new MainController();
                         }
                         mainController.mainCustomerMenu();
-                        break;
                     case "0":
                         SessionManager.getInstance().logout(); // Logga ut användaren
                         System.out.println("Du har loggats ut.");
@@ -86,12 +86,15 @@ import java.util.Scanner;
                 System.out.println("0. Logga ut");
                 System.out.println("9. Avsluta programet!");
                 System.out.println("Välj ett alternativ:");
-                System.out.println();
 
                 String select = scanner.nextLine();
 
                 switch (select) {
                     case "1":
+                        if (productController == null){
+                            productController = new ProductController();
+                        }
+                        productController.fetchAllProducts();
                         addProductToCart(scanner);
                         break;
                     case "2":
@@ -139,7 +142,7 @@ import java.util.Scanner;
                 System.out.println("0. Logga ut");
                 System.out.println("9. Avsluta hela programmet!");
                 System.out.println("Välj ett alternativ:");
-                System.out.println();
+
 
                 String select = scanner.nextLine();
 
@@ -153,6 +156,8 @@ import java.util.Scanner;
                     case "3":
                         mainController.mainAdminMenu();
                         break;
+                    case "4":
+
                     case "0":
                         SessionManager.getInstance().logout();
                         System.out.println("Du har loggats ut");
@@ -292,7 +297,7 @@ import java.util.Scanner;
 
 
         private void addProductToCart(Scanner scanner) {
-            System.out.print("Ange produktens ID att lägga till: ");
+            System.out.print("Ange ID på produkten du vill lägga till: ");
             int productId = scanner.nextInt();
             scanner.nextLine();
 

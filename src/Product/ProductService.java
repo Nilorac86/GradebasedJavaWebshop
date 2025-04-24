@@ -102,20 +102,24 @@ public class ProductService {
         return productRepository.getProductById(productId);
     }
 
-    public ArrayList<Product> getProductByFilter(String category, double maxPrice) {
+    public ArrayList<Product> getProductByFilter(String category, String productName, double maxPrice ) {
 
-        ArrayList<Product> products = productRepository.getProductsByFilter(category, maxPrice);
+        ArrayList<Product> products = productRepository.getProductsByFilter(category, productName, maxPrice);
 
-        if (maxPrice < 0){
+        if (maxPrice <= 0){
             System.out.println("Ogiltigt pris. Maxpris måste vara ett positivt tal.");
             return new ArrayList<>();
         }
 
             return (ArrayList<Product>) products.stream()
                     .filter(p -> p.getCategoryName().toLowerCase().contains(category.toLowerCase()))
+                    .filter(p -> p.getName().toLowerCase().contains(productName.toLowerCase()))
                     .filter(p -> p.getPrice() <= maxPrice)
                     .collect(Collectors.toList());
         }
 
-    }
+
+
+
+}
 

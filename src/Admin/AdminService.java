@@ -13,7 +13,7 @@ public class AdminService extends UserService {
 
     @Override
     public User userLogin( String loginValue, String password) {
-        return super.userLogin("admins", "username", loginValue, password, adminMapper); // Skicka med loginField
+        return super.userLogin("admins", "username", loginValue, password, adminMapper);
     }
 }
 

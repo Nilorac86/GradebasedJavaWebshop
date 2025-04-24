@@ -33,7 +33,7 @@ public class CustomerController extends UserController {
             System.out.println("0. Logga ut");
             System.out.println("9. Avsluta programmet");
             System.out.println("Välj ett alternativ:");
-            System.out.println();
+
 
             String select = scanner.nextLine();
 
@@ -81,7 +81,7 @@ public class CustomerController extends UserController {
             System.out.println("0. Logga ut");
             System.out.println("9. Avsluta hela programmet");
             System.out.println("Välj ett alternativ:");
-            System.out.println();
+
 
             String select = scanner.nextLine();
 
