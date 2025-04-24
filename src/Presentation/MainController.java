@@ -4,31 +4,34 @@ import Admin.AdminController;
 import Customer.CustomerController;
 import Order.OrderController;
 import Product.ProductController;
+import Review.ReviewController;
 import Session.SessionManager;
 
 import java.sql.SQLException;
-import java.sql.SQLOutput;
 import java.util.Scanner;
 
     public class MainController {
 
-        private final LoginController loginController = new LoginController();
-        private final CustomerController customerController = new CustomerController();
-        private final AdminController adminController = new AdminController();
-        private final ProductController productController = new ProductController();
-        private final OrderController orderController = new OrderController();
+        private LoginController loginController = new LoginController();
+        private CustomerController customerController = new CustomerController();
+        private AdminController adminController = new AdminController();
+        private ProductController productController = new ProductController();
+        private OrderController orderController = new OrderController();
+        private ReviewController reviewController = new ReviewController();
 
-        private int loggedInUserId;
         private String role;
+
 
         public MainController() {
 
         }
 
-        public MainController(int userId, String role) {
-            this.loggedInUserId = userId;
-            this.role = role;
-        }
+
+//        public MainController(int userId, String role) {
+//            this.loggedInUserId = userId;
+//            this.role = role;
+//        }
+// ############################# START MENY ######################################
 
         public void runMainMenu() {
             Scanner scanner = new Scanner(System.in);
@@ -40,6 +43,7 @@ import java.util.Scanner;
                 System.out.println("2. Skapa konto");
                 System.out.println("0. Avsluta");
                 System.out.print("Välj ett alternativ: ");
+                System.out.println();
 
                 String select = scanner.nextLine();
 
@@ -50,7 +54,7 @@ import java.util.Scanner;
 
                             if (SessionManager.getInstance().isLoggedIn()) {
                                 this.role = SessionManager.getInstance().getLoggedInUserRole();
-                                this.loggedInUserId = SessionManager.getInstance().getLoggedInUserId();
+
 
                                 runLogIn(); // nu körs rätt meny (admin/kund)
                             }
@@ -69,7 +73,7 @@ import java.util.Scanner;
                         break;
 
                     case "0":
-                        System.exit(0);
+                        running = false;
                         System.out.println("Programmet avslutas");
                         break;
 
@@ -81,41 +85,49 @@ import java.util.Scanner;
 
         public void runLogIn() throws SQLException {
             if ("admin".equalsIgnoreCase(role)) {
-                adminController.runAdminMenu();
+                mainAdminMenu();
             } else if ("customer".equalsIgnoreCase(role)) {
                 mainCustomerMenu();
             }
         }
 
+
+// ############################## KUNDMENY OM INLOGGAD KUND ########################################
+
         public void mainCustomerMenu() {
             Scanner scanner = new Scanner(System.in);
-            boolean running = true;
 
-            while (running) {
+            while (true) {
                 System.out.println("=== HUVUDMENY KUND ===");
-                System.out.println("1. Kund meny");
-                System.out.println("2. Produkt meny");
-                System.out.println("3. Order Meny");
+                System.out.println("1. Kundmeny");
+                System.out.println("2. Produktmeny");
+                System.out.println("3. OrderMeny");
+                System.out.println("4. Recension meny");
                 System.out.println("0. Logga ut");
                 System.out.println("9. Avsluta programmet");
                 System.out.print("Välj ett alternativ: ");
+                System.out.println();
 
                 String select = scanner.nextLine();
                 try {
                 switch (select) {
                     case "1":
-                       customerController.runCustomerMeny();
+                       customerController.runCustomerMenu();
                        break;
 
                     case "2":
                        productController.runMeny();
                         break;
                     case "3":
-                        orderController.runMeny();
+                        orderController.runCustomerMenu();
+                        break;
+                    case "4":
+                        reviewController.runCustomerMenu();
                         break;
                     case "0":
                         SessionManager.getInstance().logout();
-                        running = false;
+                        System.out.println("Du har loggats ut");
+                        System.exit(0);
                         break;
                     case "9":
                         System.exit(0);
@@ -134,35 +146,40 @@ import java.util.Scanner;
         }
 
 
+// ################################ ADMINMENY OM INLOGGAD ADMIN ###################################
+
         public void mainAdminMenu() {
             Scanner scanner = new Scanner(System.in);
-            boolean running = true;
 
-            while (running) {
-                System.out.println("=== HUVUDMENY KUND ===");
-                System.out.println("1. Kund meny");
-                System.out.println("2. Produkt meny");
-                System.out.println("3. Order Meny");
+            while (true) {
+                System.out.println("=== HUVUDMENY ADMIN ===");
+                System.out.println("1. Kundmeny");
+                System.out.println("2. Produktmeny");
+                System.out.println("3. OrderMeny");
                 System.out.println("0. Logga ut");
                 System.out.println("9. Avsluta programmet");
                 System.out.print("Välj ett alternativ: ");
+                System.out.println();
 
                 String select = scanner.nextLine();
                 try {
                     switch (select) {
                         case "1":
-                            customerController.runAdminMeny();
+                            customerController.runAdminMenu();
                             break;
 
                         case "2":
                             productController.runAdminMeny();
                             break;
                         case "3":
-                            orderController.runAdminMeny();
+                            orderController.runAdminMenu();
                             break;
+                        case "4":
+                            // reviewController kanske ska kunna se alla reviews av alla produkter
                         case "0":
                             SessionManager.getInstance().logout();
-                            running = false;
+                            System.out.println("Du har loggats ut");
+                            System.exit(0);
                             break;
                         case "9":
                             System.exit(0);

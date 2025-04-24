@@ -9,17 +9,34 @@ public class ProductService {
 
     ProductRepository productRepository = new ProductRepository();
 
-    public ArrayList<Product> getAllProducts () throws SQLException{
+    public ArrayList<Product> getAllProducts() throws SQLException {
         return productRepository.getAll();
     }
 
-    public ArrayList<Product> getProductByName (String name) throws SQLException{
-        return productRepository.getProductsByName(name);
+    public ArrayList<Product> getProductByName(String name) throws SQLException {
+        ArrayList<Product> products = productRepository.getProductsByName(name);
 
+        if (products == null || products.isEmpty()) {
+            products = new ArrayList<>();
+
+            System.out.println("Ingen produkt hittades med namnet: " + name);
+            System.out.println();
+        }
+
+        return products;
     }
 
-    public ArrayList<Product> getProductByCategory(String categoryName) throws SQLException{
-        return productRepository.getProductsByCategory(categoryName);
+
+    public ArrayList<Product> getProductByCategory(String categoryName) throws SQLException {
+        ArrayList<Product> products = productRepository.getProductsByCategory(categoryName);
+
+        if (products == null || products.isEmpty()) {
+            products = new ArrayList<>();
+
+            System.out.println("Ingen produkt hittades med kategorinamnet: " + categoryName);
+            System.out.println();
+        }
+        return products;
     }
 
 
@@ -53,24 +70,27 @@ public class ProductService {
         return success;
     }
 
-    public void updateStockQuantity(int productId, int stockQuantity)throws SQLException{
+    public void updateStockQuantity(int productId, int stockQuantity) throws SQLException {
         productRepository.updateStockQuantity(productId, stockQuantity);
     }
 
-    public void insertProduct(String name, String description, double price, int stockQuantity) throws SQLException{
+    public void insertProduct(String name, String description, double price, int stockQuantity) throws SQLException {
 
-        if(name == null || name.trim().isEmpty()){
+        if (name == null || name.trim().isEmpty()) {
             System.out.println("Namnet får inte vara tomt");
+            System.out.println();
             return;
         }
 
-        if (price <= 0){
+        if (price <= 0) {
             System.out.println("Priset måste vara större än 0");
+            System.out.println();
             return;
         }
 
-        if ( stockQuantity < 0) {
+        if (stockQuantity < 0) {
             System.out.println("Lagersaldo kan inte vara negativt");
+            System.out.println();
             return;
         }
         productRepository.insertProduct(name, description, price, stockQuantity);
@@ -78,7 +98,7 @@ public class ProductService {
         System.out.println();
     }
 
-    public Product getProductById(int productId) throws SQLException{
+    public Product getProductById(int productId) throws SQLException {
         return productRepository.getProductById(productId);
     }
 
@@ -86,11 +106,16 @@ public class ProductService {
 
         ArrayList<Product> products = productRepository.getProductsByFilter(category, maxPrice);
 
+        if (maxPrice < 0){
+            System.out.println("Ogiltigt pris. Maxpris måste vara ett positivt tal.");
+            return new ArrayList<>();
+        }
 
-        return (ArrayList<Product>) products.stream()
-                .filter(p -> p.getCategoryName().toLowerCase().contains(category.toLowerCase()))
-                .filter(p -> p.getPrice() <= maxPrice)
-                .collect(Collectors.toList());
+            return (ArrayList<Product>) products.stream()
+                    .filter(p -> p.getCategoryName().toLowerCase().contains(category.toLowerCase()))
+                    .filter(p -> p.getPrice() <= maxPrice)
+                    .collect(Collectors.toList());
+        }
+
     }
-}
 

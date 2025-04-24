@@ -1,5 +1,6 @@
 package Order;
-import Customer.CustomerController;
+
+import Presentation.MainController;
 import Product.Product;
 import Product.ProductController;
 import Product.ProductService;
@@ -11,47 +12,45 @@ import java.util.Scanner;
 
 
     public class OrderController {
-        private ProductService productService = new ProductService();
-        private ProductController productController = new ProductController();
-        private CustomerController customerController;
+        private  ProductController productController = new ProductController();
+        private final ProductService productService = new ProductService();
+        private  MainController mainController;
 
-        private Cart cart = new Cart();
-        private OrderService orderService = new OrderService();
+        private final Cart cart = new Cart();
+        private final OrderService orderService = new OrderService();
 
-        public void runMeny() throws SQLException {
+
+// ############################### KUNDMENY ORDER ########################################
+
+        public void runCustomerMenu() throws SQLException {
 
             Scanner scanner = new Scanner(System.in);
             boolean running = true;
             while (running){
 
-                String select = orderMenu(scanner);
+                System.out.println("=== ORDERMENY ===");
+                System.out.println("1. Se dina ordrar ");
+                System.out.println("2. Gå till kundvagn");
+                System.out.println("3. Gå till huvudmenyn");
+                System.out.println("0. Logga ut");
+                System.out.println("9. Avsluta programmet!");
+                System.out.println("Välj ett alternativ:");
+                System.out.println();
+
+                String select = scanner.nextLine();
+
                 switch (select) {
                     case "1":
-
-                        addProductToCart(scanner);
-                        break;
-                    case "2":
-                        deleteProductFromCart(scanner);
-                        break;
-                    case "3":
-                        updateProductQuantity(scanner);
-                        break;
-                    case "4":
-                        createOrderFromCart();
-                        break;
-                    case "5":
-                        cart.showCartItems();
-                        break;
-                    case "6":
                         getLoggedInCustomerOrders();
                         break;
-                    case"7":
-                        productController.runMeny();
-                    case "8":
-                        if (customerController == null){
-                            customerController = new CustomerController();
+                    case "2":
+                        runCustomerCartMenu();
+                        break;
+                    case "3":
+                        if ( mainController == null){
+                            mainController = new MainController();
                         }
-                        customerController.runCustomerMeny();
+                        mainController.mainCustomerMenu();
                         break;
                     case "0":
                         SessionManager.getInstance().logout(); // Logga ut användaren
@@ -68,25 +67,51 @@ import java.util.Scanner;
             }
         }
 
-        public void runAdminMeny() throws SQLException {
+
+// ############################## KUNDVAGN MENY ########################################
+
+        public void runCustomerCartMenu() throws SQLException {
 
             Scanner scanner = new Scanner(System.in);
-            boolean running = true;
-            while (running){
 
-                String select = orderMenu(scanner);
+            while (true){
+
+                System.out.println("=== KUNDVAGN ===");
+                System.out.println("1. Lägga produkter i kundvagn");
+                System.out.println("2. Ta bort produkt från kundvagn");
+                System.out.println("3. Ändra antal produkter i kundvagn");
+                System.out.println("4. Lägga order");
+                System.out.println("5. Visa kundvagn");
+                System.out.println("6. Tillbaka till ordermeny");
+                System.out.println("0. Logga ut");
+                System.out.println("9. Avsluta programet!");
+                System.out.println("Välj ett alternativ:");
+                System.out.println();
+
+                String select = scanner.nextLine();
+
                 switch (select) {
                     case "1":
-                        fetchAllOrders();
+                        addProductToCart(scanner);
                         break;
                     case "2":
-                        getCustomerOrdersById(scanner);
+                        deleteProductFromCart(scanner);
                         break;
                     case "3":
+                        updateProductQuantity(scanner);
+                        break;
+                    case "4":
                         createOrderFromCart();
                         break;
+                    case "5":
+                        cart.showCartItems();
+                        break;
+                    case "6":
+                        runCustomerMenu();
                     case "0":
-                        running = false;
+                        SessionManager.getInstance().logout();
+                        System.out.println("Du har loggats ut");
+                        System.exit(0);
                         break;
                     case "9":
                         System.out.println("Programmet avslutas");
@@ -99,39 +124,53 @@ import java.util.Scanner;
         }
 
 
-        private static String orderMenu(Scanner scanner) {
-            System.out.println("Order meny");
-            System.out.println("1. Lägga produkter i kundvagn");
-            System.out.println("2. Ta bort produkt från kundvagn");
-            System.out.println("3. Ändra antal produkter i kundvagn");
-            System.out.println("4. Lägga order");
-            System.out.println("5. Visa kundvagn");
-            System.out.println("6. Se dina ordrar");
-            System.out.println("7. Produktmeny");
-            System.out.println("8. Kund meny");
-            System.out.println("0. Logga ut");
-            System.out.println("9. Avsluta hela programmet!");
-            System.out.println("Välj ett alternativ:");
-            String select = scanner.nextLine();
-            return select;
+// ############################# ORDERMENY ADMIN #############################################
+
+        public void runAdminMenu() throws SQLException {
+
+            Scanner scanner = new Scanner(System.in);
+
+            while (true){
+
+                System.out.println("Orderhantering meny");
+                System.out.println("1. Hämta alla ordrar");
+                System.out.println("2. Hämta en kunds ordrar");
+                System.out.println("3. Gå tillbaka till huvudmenyn");
+                System.out.println("0. Logga ut");
+                System.out.println("9. Avsluta hela programmet!");
+                System.out.println("Välj ett alternativ:");
+                System.out.println();
+
+                String select = scanner.nextLine();
+
+                switch (select) {
+                    case "1":
+                        fetchAllOrders();
+                        break;
+                    case "2":
+                        getCustomerOrdersById(scanner);
+                        break;
+                    case "3":
+                        mainController.mainAdminMenu();
+                        break;
+                    case "0":
+                        SessionManager.getInstance().logout();
+                        System.out.println("Du har loggats ut");
+                        System.exit(0);
+                        break;
+                    case "9":
+                        System.out.println("Programmet avslutas");
+                        System.exit(0);
+
+                    default:
+                        System.out.println("Välj ett alternativ från menyn.");
+                }
+            }
         }
 
 
 
-
-        private static String adminOrderMenu(Scanner scanner) {
-            System.out.println("Orderhantering meny");
-            System.out.println("1. Hämta alla ordrar");
-            System.out.println("2. Hämta en kunds ordrar");
-            System.out.println("3. Lägga en order");
-            System.out.println("0. Gå tillbaka till huvudmenyn");
-            System.out.println("9. Avsluta hela programmet!");
-            System.out.println("Välj ett alternativ:");
-            String select = scanner.nextLine();
-            return select;
-        }
-
-
+// ################################## METODER #####################################################
 
         private void fetchAllOrders() throws SQLException {
             ArrayList<Order> orders = orderService.getAllOrders();
@@ -144,33 +183,42 @@ import java.util.Scanner;
         private void getLoggedInCustomerOrders() {
             ArrayList<Order> orders = orderService.getLoggedInCustomerOrders();
 
-            for (Order order : orders) {
-                System.out.println("Order ID: " + order.getOrderId());
-                System.out.println("Order Datum: " + order.getOrderDate());
-                System.out.println("Produkter i denna order:");
+            if (orders.isEmpty()) {
+                System.out.println("Du har ingen order.");
+                System.out.println();
 
-                double orderTotal = 0; // Här sparas totalpriset för ordern
+            } else {
+                System.out.println("\n====== ORDER ======\n");
 
-                for (OrderItem oi : order.getItems()) {
-                    double itemTotal = oi.getTotalPrice(); // eller oi.getQuantity() * oi.getUnitPrice()
-                    orderTotal += itemTotal;
+                for (Order order : orders) {
+                    System.out.println("Order ID: " + order.getOrderId());
+                    System.out.println("Order Datum: " + order.getOrderDate());
+                    System.out.println("Produkter i denna order:");
+                    System.out.println("-----------------------------------");
 
-                    System.out.printf("Produkt: %s | Beskrivning: %s | Antal: %d | Enhetspris: %.2f | Summa: %.2f \n",
-                            oi.getProduct().getName(),
-                            oi.getProduct().getDescription(),
-                            oi.getQuantity(),
-                            oi.getUnitPrice(),
-                            itemTotal);
+                    double orderTotal = 0;
+
+                    for (OrderItem oi : order.getItems()) {
+                        double itemTotal = oi.getTotalPrice();
+                        orderTotal += itemTotal;
+
+                        System.out.printf("Produkt: %s | Beskrivning: %s | Antal: %d | Enhetspris: %.2f | Summa: %.2f \n",
+                                oi.getProduct().getName(),
+                                oi.getProduct().getDescription(),
+                                oi.getQuantity(),
+                                oi.getUnitPrice(),
+                                itemTotal);
+                    }
+
+
+                    System.out.println("----------------------------------");
+                    System.out.printf("Total summa för ordern: %.2f kr\n", orderTotal);
+                    System.out.println("----------------------------------------------------------------------");
                 }
 
-                // Skriv ut totalpriset efter att alla orderrader visats
-                System.out.println("----------------------------------");
-                System.out.printf("Total summa för ordern: %.2f kr\n", orderTotal);
-                System.out.println("----------------------------------------------------------------------");
             }
+
         }
-
-
 
         private void getCustomerOrdersById(Scanner scanner) {
             try {
@@ -304,4 +352,6 @@ import java.util.Scanner;
                 }
             }
         }
+
+
     }

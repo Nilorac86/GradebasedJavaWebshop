@@ -37,12 +37,20 @@ import java.util.HashMap;
 
         // Visa alla produkter i kundvagnen
         public void showCartItems() {
+
+
             for (CartItem item : cartItems.values()) {
+                double itemTotal = item.getProduct().getPrice() * item.getQuantity();
+
                 System.out.println("Produkt: " + item.getProduct().getName() +
                         ", Kvantitet: " + item.getQuantity() +
                         ", Pris: " + item.getProduct().getPrice() +
-                        ", Total summa: " + totalPriceCart());
+                        ", Summa: " + itemTotal);
+                System.out.println(2);
             }
+            System.out.println("Summa kundvagn : " + totalPriceCart() + "Kr");
+            System.out.println("-----------------------------------------");
+            System.out.println();
         }
 
         public HashMap<Integer, CartItem> getCartItems() {

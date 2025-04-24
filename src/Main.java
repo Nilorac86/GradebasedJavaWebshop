@@ -1,8 +1,6 @@
 
 import Presentation.MainController;
-import Review.ReviewController;
 
-import java.sql.SQLException;
 
 
 public class Main {

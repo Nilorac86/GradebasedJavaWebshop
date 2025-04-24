@@ -9,15 +9,26 @@ public class ProductController {
 
 
     private OrderController orderController;
-    private ProductService productService = new ProductService();
+    private final ProductService productService = new ProductService();
 
     public void runMeny() throws SQLException {
 
         Scanner scanner = new Scanner(System.in);
-        boolean running = true;
-        while (running) {
 
-            String select = productMeny(scanner);
+        while (true) {
+
+            System.out.println("=== PRODUKTER ===");
+            System.out.println("1. Hämta alla produkter");
+            System.out.println("2. Sök produkt efter produktnamn");
+            System.out.println("3. Sök produkt efter kategori");
+            System.out.println("4. Sök på produkt efter kategori och maxpris");
+            System.out.println("5. Gå tillbaka till order");
+            System.out.println("0. Logga ut");
+            System.out.println("9. Avsluta hela programmet");
+            System.out.println("Välj ett alternativ:");
+            System.out.println();
+
+            String select = scanner.nextLine();
 
             switch (select) {
                 case "1":
@@ -33,15 +44,15 @@ public class ProductController {
                     getProductsByFilter(scanner);
                     break;
                 case "5":
-                    if (orderController == null){
+                    if (orderController == null) {
                         orderController = new OrderController();
                     }
-                        orderController.runMeny();
+                    orderController.runCustomerMenu();
                     break;
                 case "0":
                     SessionManager.getInstance().logout(); // Logga ut användaren
                     System.out.println("Du har loggats ut.");
-                    running = false;
+                    System.exit(0);
                     break;
                 case "9":
                     System.out.println("Programmet avslutas");
@@ -55,10 +66,21 @@ public class ProductController {
     public void runAdminMeny() throws SQLException {
 
         Scanner scanner = new Scanner(System.in);
-        boolean running = true;
-        while (running) {
 
-            String select = productAdminMeny(scanner);
+        while (true) {
+
+            System.out.println("Produkthanterings meny");
+            System.out.println("1. Hämta alla produkter");
+            System.out.println("2. Sök produkt efter produktnamn");
+            System.out.println("3. Sök produkt efter kategori");
+            System.out.println("4. Uppdatera pris på produkt");
+            System.out.println("5. Lägg till en produkt");
+            System.out.println("0. Gå tillbaka till huvudmenyn");
+            System.out.println("9. Avsluta hela programmet");
+            System.out.println("Välj ett alternativ:");
+            System.out.println();
+
+            String select = scanner.nextLine();
 
             switch (select) {
                 case "1":
@@ -77,8 +99,9 @@ public class ProductController {
                     insertProduct(scanner);
                     break;
                 case "0":
-                    SessionManager.getInstance().logout();
-                    running = false;
+                    SessionManager.getInstance().logout(); // Logga ut användaren
+                    System.out.println("Du har loggats ut.");
+                    System.exit(0);
                     break;
                 case "9":
                     System.out.println("Programmet avslutas");
@@ -90,38 +113,9 @@ public class ProductController {
     }
 
 
-    private static String productMeny(Scanner scanner) {
-        System.out.println("Produkthanterings meny");
-        System.out.println("1. Hämta alla produkter");
-        System.out.println("2. Sök produkt efter produktnamn");
-        System.out.println("3. Sök produkt efter kategori");
-        System.out.println("4. Sök på produkt efter kategori och maxpris");
-        System.out.println("5. Gå tillbaka till order");
-        System.out.println("0. Logga ut");
-        System.out.println("9. Avsluta hela programmet");
-        System.out.println("Välj ett alternativ:");
-        String select = scanner.nextLine();
-        return select;
-
-    }
-
-    private static String productAdminMeny(Scanner scanner) {
-        System.out.println("Produkthanterings meny");
-        System.out.println("1. Hämta alla produkter");
-        System.out.println("2. Sök produkt efter produktnamn");
-        System.out.println("3. Sök produkt efter kategori");
-        System.out.println("4. Uppdatera pris på produkt");
-        System.out.println("5. Lägg till en produkt");
-        System.out.println("0. Gå tillbaka till huvudmenyn");
-        System.out.println("9. Avsluta hela programmet");
-        System.out.println("Välj ett alternativ:");
-        String select = scanner.nextLine();
-        return select;
-    }
-
-
     private void fetchAllProducts() throws SQLException {
         ArrayList<Product> products = productService.getAllProducts();
+
         for (Product product : products) {
 
             System.out.println("ProductId: " + product.getProductId());
@@ -137,16 +131,23 @@ public class ProductController {
             System.out.println("Skriv in ett produktnamn:");
             String name = scanner.nextLine();
             ArrayList<Product> products = productService.getProductByName(name);
-            for (Product product : products) {
-                System.out.println("Produkt: " + product.getName());
-                System.out.println("Pris: " + product.getPrice());
-                System.out.println("Beskrivning: " + product.getDescription());
+
+            if (products.isEmpty()) {
                 System.out.println();
+            } else {
+                for (Product product : products) {
+
+                    System.out.println("Produkt: " + product.getName());
+                    System.out.println("Pris: " + product.getPrice());
+                    System.out.println("Beskrivning: " + product.getDescription());
+                    System.out.println();
+                }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("Fel vid databasåtkomst: " + e.getMessage());
         }
     }
+
 
     private void searchProductByCategory(Scanner scanner) {
         try {
@@ -156,13 +157,20 @@ public class ProductController {
 
             ArrayList<Product> products = productService.getProductByCategory(categoryName);
 
-
-            for (Product product : products) {
-                System.out.println("Kategori: " + product.getCategoryName());
-                System.out.println("Produkt: " + product.getName());
-                System.out.println("Pris: " + product.getPrice());
-                System.out.println("Beskrivning: " + product.getDescription());
+            if (products.isEmpty()) {
                 System.out.println();
+            } else {
+
+                System.out.println("\n====== MATCHANDE PRODUKTER ======\n");
+
+                for (Product product : products) {
+                    System.out.println("Kategori: " + product.getCategoryName());
+                    System.out.println("Produkt: " + product.getName());
+                    System.out.println("Pris: " + product.getPrice());
+                    System.out.println("Beskrivning: " + product.getDescription());
+                    System.out.println("-----------------------------------");
+                    System.out.println();
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -170,7 +178,7 @@ public class ProductController {
 
     }
 
-    public boolean updateProductPrice(Scanner scanner) {
+    public void updateProductPrice(Scanner scanner) {
         System.out.println("Ange id på den product som ska uppdateras:");
         int productId = scanner.nextInt();
         scanner.nextLine();
@@ -182,7 +190,7 @@ public class ProductController {
         double price = Double.parseDouble(priceInput);
 
         try {
-            return productService.updateProductPrice(productId, price);
+            productService.updateProductPrice(productId, price);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -209,7 +217,6 @@ public class ProductController {
                 System.out.println("Pris får inte vara tomt.");
                 continue;
             }
-
             try {
                 price = Double.parseDouble(priceInput);
                 if (price <= 0) {
@@ -219,7 +226,6 @@ public class ProductController {
                 System.out.println("Ogiltigt format på pris. Ange ett numeriskt värde.");
             }
         }
-
 
         int stockQuantity = -1;
         while (stockQuantity < 0) {
@@ -249,22 +255,48 @@ public class ProductController {
         }
 
     }
+
     private void getProductsByFilter(Scanner scanner) {
         System.out.println("Ange kategori ");
         String category = scanner.nextLine();
 
-        System.out.println("Ange maxpris: ");
-        double maxPrice = scanner.nextDouble();
-        scanner.nextLine();
-
-        ArrayList<Product> filteredProducts = productService.getProductByFilter(category, maxPrice);
+        double maxPrice = getValidPrice(scanner);
 
 
-        if (filteredProducts.isEmpty()) {
-            System.out.println("Inga produkter matchar dina filter.");
+        ArrayList<Product> products = productService.getProductByFilter(category, maxPrice);
+
+
+        if (products.isEmpty()) {
+            System.out.println("Inga produkter matchar dina filter: " + category + maxPrice);
         } else {
-            System.out.println("Filtrerade produkter:");
-            filteredProducts.forEach(p -> System.out.println("Product: " + p.getName() + ",  " + "Pris: " + p.getPrice() + " kr"));
+            System.out.println("\n====== MATCHANDE PRODUKTER ======\n");
+
+            for (Product p : products) {
+                System.out.println("Namn       : " + p.getName());
+                System.out.println("Pris       : " + p.getPrice() + " kr");
+                System.out.println("Beskrivning: " + p.getDescription());
+                System.out.println("-----------------------------------");
+            }
         }
     }
+
+    private double getValidPrice(Scanner scanner) {
+        double maxPrice = -1;
+        while (maxPrice < 0) {
+            System.out.println("Ange maxpris: ");
+            String priceInput = scanner.nextLine();
+
+            try {
+                maxPrice = Double.parseDouble(priceInput);
+                if (maxPrice < 0) {
+                    System.out.println("Pris får inte vara ett negativt värde.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Ogiltigt format. Ange ett numeriskt värde.");
+            }
+        }
+        return maxPrice;
+    }
+
 }
+

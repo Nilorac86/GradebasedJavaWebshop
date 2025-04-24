@@ -1,7 +1,6 @@
 package Customer;
-import Order.OrderController;
+
 import Presentation.MainController;
-import Review.ReviewController;
 import Session.SessionManager;
 import User.UserController;
 
@@ -13,50 +12,101 @@ public class CustomerController extends UserController {
 
     private CustomerRepository customerRepository = new CustomerRepository();
     private CustomerService customerService = new CustomerService();
-    private OrderController orderController = new OrderController();
     private MainController mainController;
-    private ReviewController reviewController = new ReviewController();
 
 
+    public CustomerController() {
+        this.mainController = mainController;
+    }
 
-    public void runAdminMeny() {
+// ############################ KUNDMENY ###############################################
+    public void runCustomerMenu() throws SQLException {
+
         Scanner scanner = new Scanner(System.in);
-        boolean running = true;
-        while (running) {
 
-            String select = adminMeny(scanner);
+        while (true) {
 
+            System.out.println("=== KUNDMENY INSTÄLLNINGAR ===");
+            System.out.println("1.Uppdatera din email ");
+            System.out.println("2. Radera konto");
+            System.out.println("3. Gå tillbaka till Huvudmeny");
+            System.out.println("0. Logga ut");
+            System.out.println("9. Avsluta programmet");
+            System.out.println("Välj ett alternativ:");
+            System.out.println();
+
+            String select = scanner.nextLine();
+
+            switch (select) {
+                case "1":
+                    updateCustomer(scanner);
+                    break;
+                case "2":
+                    deleteCustomer();
+                    break;
+                case "3":
+                    if ( mainController == null){
+                        mainController = new MainController();
+                    }
+                    mainController.mainCustomerMenu();
+                    break;
+                case "0":
+                    SessionManager.getInstance().logout();
+                    System.out.println("Du har loggats ut");
+                    System.exit(0);
+                    break;
+                case "9":
+                    System.exit(0);
+                    System.out.println("Programmet avslutas");
+                    break;
+                default:
+                    System.out.println("Välj ett alternativ från menyn.");
+            }
+        }
+    }
+
+// ############################# ADMINMENY ############################################
+
+    public void runAdminMenu() {
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+
+            System.out.println("=== ADMIN KUNDMENY ===");
+            System.out.println("1. Hämta alla kunder");
+            System.out.println("2. Hämta en kund efter id");
+            System.out.println("3. Lägg till en ny kund");
+            System.out.println("4. Uppdatera kunds email");
+            System.out.println("5. Radera användare");
+            System.out.println("0. Logga ut");
+            System.out.println("9. Avsluta hela programmet");
+            System.out.println("Välj ett alternativ:");
+            System.out.println();
+
+            String select = scanner.nextLine();
+
+            try {
             switch (select) {
                 case "1":
                     fetchAllCustomers();
                     break;
                 case "2":
-                    System.out.println("Ange id:");
-                    int id = scanner.nextInt();
-                    fetchCustomerById(scanner);
-                    Customer customer = null;
-                    try {
-                        customer = customerRepository.getCustomerById(id);
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    }
-                    System.out.println(customer.getName());
+                    getCustomerById(scanner);
                     break;
                 case "3":
-                    try {
-                        createCustomer(scanner);
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    }
-                    break;
+                     createCustomer(scanner);
+                     break;
                 case "4":
-                    updateCustomer(scanner);
+                    updateCustomerEmail(scanner);
                     break;
                 case "5":
                     deleteCustomerById(scanner);
+                case "6":
+                    mainController.mainAdminMenu();
                 case "0":
                     SessionManager.getInstance().logout();
-                    running = false;
+                    System.out.println("Du har loggats ut");
+                    System.exit(0);
                     break;
                 case "9":
                     System.exit(0);
@@ -65,76 +115,15 @@ public class CustomerController extends UserController {
                 default:
                     System.out.println("Välj ett alternativ från menyn.");
             }
-        }
-    }
 
-    public void fetchCustomerById(Scanner scanner) {
-        scanner.nextLine();
-    }
-
-
-    public void runCustomerMeny() throws SQLException {
-
-        Scanner scanner = new Scanner(System.in);
-        boolean running = true;
-        while (running) {
-
-            String select = customerMeny(scanner);
-
-            switch (select) {
-                case "1":
-                    createCustomer(scanner);
-                    break;
-                case "2":
-                    updateCustomer(scanner);
-                    break;
-                case "3":
-                    deleteCustomer();
-                    break;
-                case "4":
-                    orderController.runMeny();
-                case "5":
-                    reviewController.runMenu();
-                case "0":
-                    SessionManager.getInstance().logout();
-                    running = false;
-                    break;
-                case "9":
-                    System.exit(0);
-                    System.out.println("Programmet avslutas");
-                    break;
-                default:
-                    System.out.println("Välj ett alternativ från menyn.");
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
         }
     }
 
-    private static String adminMeny(Scanner scanner) {
-        System.out.println("Kundhanterings meny");
-        System.out.println("1. Hämta alla kunder");
-        System.out.println("2. Hämta en kund efter id");
-        System.out.println("3. Lägg till en ny kund");
-        System.out.println("4. Uppdatera din email");
-        System.out.println("5. Radera användare");
-        System.out.println("0. Logga ut");
-        System.out.println("9. Avsluta hela programmet");
-        System.out.println("Välj ett alternativ:");
-        return scanner.nextLine();
-    }
 
-    private static String customerMeny(Scanner scanner) {
-        System.out.println("Kund meny");
-        System.out.println("1. Skapa ett konto");
-        System.out.println("2. Uppdatera din email");
-        System.out.println("3. Radera konto");
-        System.out.println("4. Hantera order");
-        System.out.println("5. Reviews meny");
-        System.out.println("0. Logga ut");
-        System.out.println("9. Avsluta hela programmet");
-        System.out.println("Välj ett alternativ:");
-        return scanner.nextLine();
-    }
-
+// ####################### METODER ###############################################
 
     public void createCustomer(Scanner scanner) throws SQLException {
         System.out.println("Ange ett namn:");
@@ -167,10 +156,6 @@ public class CustomerController extends UserController {
     }
 
     private boolean updateCustomer(Scanner scanner) {
-        if (!SessionManager.getInstance().isCustomerLoggedIn()) {
-            System.out.println("Du måste vara inloggad för att uppdatera din e-post.");
-            return false;
-        }
 
         System.out.println("Ange din nya e-postadress:");
         String email = scanner.nextLine();
@@ -186,10 +171,45 @@ public class CustomerController extends UserController {
         return success;
     }
 
+    private boolean updateCustomerEmail(Scanner scanner){
+        System.out.println("Ange id på den kund som ska uppdateras");
+        int customerId = scanner.nextInt();
+        scanner.nextLine();
+        System.out.println("Ange din nya e-postadress:");
+        String email = scanner.nextLine();
+        boolean success = false;
+
+        try {
+            success = customerService.updateEmail(customerId,email);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println(success ? "Email har uppdaterats." : "Kund hittades ej.");
+        return success;
+    }
+
+
+    public void getCustomerById(Scanner scanner) {
+        System.out.println("Ange id:");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+        Customer customer = null;
+
+        try {
+            customer = customerRepository.getCustomerById(id);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println(customer.getName());
+    }
+
+
     private boolean deleteCustomer() {
         boolean deleteSuccess = false;
         try {
-            deleteSuccess = customerService.deleteCustomer(); // Tar bort inloggad kund
+            deleteSuccess = customerService.deleteCustomer();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

@@ -1,7 +1,6 @@
 package Review;
 
-import Customer.CustomerController;
-import Customer.CustomerService;
+import Presentation.MainController;
 import Session.SessionManager;
 import Order.Order;
 import Order.OrderService;
@@ -15,14 +14,24 @@ public class ReviewController {
 
     private OrderService orderService = new OrderService();
    private ReviewService reviewService = new ReviewService();
-   private CustomerController customerController;
+   private MainController mainController;
 
-    public void runMenu() throws SQLException {
+    public void runCustomerMenu() throws SQLException {
 
         Scanner scanner = new Scanner(System.in);
-        boolean running = true;
-        while (running) {
-            String select = reviewMenu(scanner);
+
+        while (true) {
+
+            System.out.println("=== RECENSIONER ===");
+            System.out.println("1. Se dina recensioner");
+            System.out.println("2. Lämna en recension");
+            System.out.println("3. Tillbaka till huvudmenyn");
+            System.out.println("0. Logga ut");
+            System.out.println("9. Avsluta programmet");
+            System.out.println("Välj ett alternativ:");
+            System.out.println();
+
+            String select = scanner.nextLine();
 
             switch (select) {
                 case "1":
@@ -32,10 +41,10 @@ public class ReviewController {
                     reviewProduct(scanner);
                     break;
                 case "3":
-                    if(customerController == null){
-                        customerController = new CustomerController();
+                    if ( mainController == null){
+                        mainController = new MainController();
                     }
-                    customerController.runCustomerMeny();
+                    mainController.mainCustomerMenu();
                     break;
                 case "4":
 
@@ -43,7 +52,7 @@ public class ReviewController {
                 case "0":
                     SessionManager.getInstance().logout(); // Logga ut användaren
                     System.out.println("Du har loggats ut.");
-                    running = false;
+                    System.exit(0);
                     break;
                 case "9":
                     System.out.println("Programmet avslutas");
@@ -54,19 +63,6 @@ public class ReviewController {
         }
     }
 
-
-    private static String reviewMenu(Scanner scanner) {
-        System.out.println("Produkthanterings meny");
-        System.out.println("1. Se dina reviews");
-        System.out.println("2. Lämna en review");
-        System.out.println("3. Tillbaka till huvudmenyn");
-        System.out.println("0. Logga ut");
-        System.out.println("9. Avsluta hela programmet");
-        System.out.println("Välj ett alternativ:");
-        String select = scanner.nextLine();
-        return select;
-
-    }
 
 
     private void getCustomersReviews () {
