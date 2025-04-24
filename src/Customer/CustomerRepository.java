@@ -21,9 +21,11 @@ public class CustomerRepository extends UserRepository {
                 customers.add(new Customer(rs.getInt("customer_id"),
                         rs.getString("name"),
                         rs.getString("email"),
+                        rs.getString("password"),
                         rs.getString("phone"),
-                        rs.getString("address"),
-                        rs.getString("password")));
+                        rs.getString("address")
+
+                        ));
             }
 
         }
@@ -43,21 +45,26 @@ public class CustomerRepository extends UserRepository {
 
             ResultSet rs = pstmt.executeQuery();
 
-            return new Customer(customerId, rs.getString("name"));
+            return new Customer(customerId, rs.getString("name"),
+                    rs.getString("email"),
+                    rs.getString("password"),
+                    rs.getString("phone"),
+                    rs.getString("address"));
+
         }
     }
 
     public void insertCustomer(String name, String email, String phone, String address, String password) throws SQLException {
-        String sql = "INSERT INTO customers(name, email, phone, address, password) VALUES (?,?,?,?,?)";
+        String sql = "INSERT INTO customers(name, email, password, phone, address) VALUES (?,?,?,?,?)";
 
         try (Connection conn = DriverManager.getConnection(URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, name);
             pstmt.setString(2, email);
-            pstmt.setString(3, phone);
-            pstmt.setString(4, address);
-            pstmt.setString(5, password);
+            pstmt.setString(3, password);  // ✔ rätt plats nu
+            pstmt.setString(4, phone);
+            pstmt.setString(5, address);
 
             pstmt.execute();
         }

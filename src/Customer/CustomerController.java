@@ -130,14 +130,14 @@ public class CustomerController extends UserController {
         String name = scanner.nextLine();
         System.out.println("Ange din email:");
         String email = scanner.nextLine();
+        System.out.println("Ange ett lösenord:");      // Flytta upp lösenordet hit
+        String password = scanner.nextLine();
         System.out.println("Ange ett telefonnummer:");
         String phone = scanner.nextLine();
         System.out.println("Ange din adress:");
         String address = scanner.nextLine();
-        System.out.println("Ange ett lösenord:");
-        String password = scanner.nextLine();
 
-        customerService.insertUser(name, email, phone, address, password);
+        customerService.insertUser(name, email, password, phone, address);
     }
 
     private void fetchAllCustomers() {
@@ -147,12 +147,20 @@ public class CustomerController extends UserController {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
         for (Customer customer : customers) {
             System.out.println("KundId: " + customer.getId());
             System.out.println("Namn: " + customer.getName());
+            System.out.println("Lösenord : " + customer.getPassword());
             System.out.println("Email: " + customer.getEmail());
+            System.out.println("Adress: " + customer.getAddress());
+            System.out.println("Telefonnummer: " + customer.getPhone());
+
             System.out.println();
+
+
         }
+
     }
 
     private boolean updateCustomer(Scanner scanner) {
@@ -202,7 +210,14 @@ public class CustomerController extends UserController {
             throw new RuntimeException(e);
         }
 
-        System.out.println(customer.getName());
+        System.out.println("KundId: " + customer.getId());
+        System.out.println("Namn: " + customer.getName());
+        System.out.println("Lösenord : " + customer.getPassword());
+        System.out.println("Email: " + customer.getEmail());
+        System.out.println("Adress: " + customer.getAddress());
+        System.out.println("Telefonnummer: " + customer.getPhone());
+
+        System.out.println();;
     }
 
 
