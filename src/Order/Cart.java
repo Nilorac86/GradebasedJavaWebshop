@@ -6,13 +6,14 @@ import java.util.HashMap;
 
 
     public class Cart {
-        private final HashMap<Integer, CartItem> cartItems; // Nyckel: produktens ID, Värde: CartItem (produkt och kvantitet)
+        private final HashMap<Integer, CartItem> cartItems; // Nyckel med produktens ID, och värde CartItem, produkt och kvantitet.
 
 
         public Cart() {
             cartItems = new HashMap<>();
-        }
+        } // constructor för kundvagn
 
+        // Lägger till produkt i kundvagnen, hämtar produkt via id, skapar nytt objekt med produktId och kvantitet.
         public void addProduct(Product product, int quantity) {
             if (cartItems.containsKey(product.getProductId())) {
                 CartItem item = cartItems.get(product.getProductId());
@@ -22,6 +23,7 @@ import java.util.HashMap;
             }
         }
 
+        // Tar bort en produkt från kundvagn via id
         public void removeProduct(int productId) {
             cartItems.remove(productId);
         }
@@ -32,13 +34,13 @@ import java.util.HashMap;
             for (CartItem item : cartItems.values()) {
                 totalPrice += item.getProduct().getPrice() * item.getQuantity();
             }
-            return totalPrice; // Rätt variabel returneras nu
+            return totalPrice;
         }
 
-        // Visa alla produkter i kundvagnen
+        // Visar alla produkter i kundvagnen
         public void showCartItems() {
 
-
+            // För varje produkt i kundvagnen, räknas summa av produkten, skriver ut en för varje rad/produkt.
             for (CartItem item : cartItems.values()) {
                 double itemTotal = item.getProduct().getPrice() * item.getQuantity();
 
@@ -48,18 +50,19 @@ import java.util.HashMap;
                         ", Summa: " + itemTotal);
                 System.out.println(2);
             }
-            System.out.println("Summa kundvagn : " + totalPriceCart() + "Kr");
+            System.out.println("Summa kundvagn : " + totalPriceCart() + "Kr"); // totalpris kundvagn
             System.out.println("-----------------------------------------");
             System.out.println();
         }
 
+
         public HashMap<Integer, CartItem> getCartItems() {
             return cartItems;
-        }
+        } // En getter för kundvagnen.
 
         public void clearCart() {
             cartItems.clear();
-        }
+        } // Tömmer kundvagnen
 
     }
 

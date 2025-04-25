@@ -44,6 +44,7 @@ public class ProductRepository {
 
     }
 
+    // Query Hämta produkter via namn
     public ArrayList<Product> getProductsByName(String name) {
 
         ArrayList<Product> products = new ArrayList<>();
@@ -74,6 +75,7 @@ public class ProductRepository {
         return products;
     }
 
+    // Query hämta produkter via kategori
     public ArrayList<Product> getProductsByCategory(String categoryName) {
         ArrayList<Product> products = new ArrayList<>();
 
@@ -106,6 +108,7 @@ public class ProductRepository {
         return products;
     }
 
+    // Uppdatera pris på produkt
     public boolean updateProductPrice(int product_id, double price) {
         String sql = "UPDATE products SET price = ? WHERE product_id = ? ";
 
@@ -122,7 +125,7 @@ public class ProductRepository {
         }
     }
 
-
+// Hämta produkt via id
     public Product getProductById(int productId) {
 
         String sql = "SELECT * FROM products WHERE product_id = ?";
@@ -147,7 +150,7 @@ public class ProductRepository {
                 return null;
     }
 
-
+// Uppdaterar lagersaldo
     public void updateStockQuantity(int product_id, int stock_quantity) {
         String sql = "UPDATE products SET stock_quantity = ? WHERE product_id = ? ";
 
@@ -163,7 +166,7 @@ public class ProductRepository {
         }
     }
 
-
+// Lägger till produkt
     public void insertProduct(String name, String description, double price, int stockQuantity) {
         String sql = "INSERT INTO products(name, description, price, stock_quantity) VALUES (?,?,?,?)";
 
@@ -183,6 +186,7 @@ public class ProductRepository {
     }
     }
 
+    // Sök produkter via filter
     public ArrayList<Product> getProductsByFilter(String category, String productName, double maxPrice) {
         ArrayList<Product> products = new ArrayList<>();
 

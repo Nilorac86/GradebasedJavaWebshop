@@ -177,14 +177,32 @@ import Product.ProductController;
 
 // ################################## METODER #####################################################
 
+        // Hämtar alla ordrar
         private void fetchAllOrders() {
             ArrayList<Order> orders = orderService.getAllOrders();
             for (Order order : orders) {
-                System.out.println("OrderId: " + order.getOrderId() + ", order datum: " + order.getOrderDate());
+                System.out.println("OrderId: " + order.getOrderId() + ", orderdatum: " + order.getOrderDate());
+                double total = 0;
+
+                for (OrderItem item : order.getItems()) {
+                    Product p = item.getProduct();
+                    double subtotal = item.getQuantity() * p.getPrice();
+                    total += subtotal;
+
+                    System.out.println("Productnamn: " + p.getName() +
+                            " | Antal: " + item.getQuantity() +
+                            " | Pris: " + p.getPrice() + " kr" +
+                            " | Delsumma: " + subtotal + " kr");
+                }
+
+                System.out.println("-----------------------------------------");
+                System.out.println("Total summa: " + total + " kr\n");
             }
+
         }
 
 
+        // Hämtar inloggad kunds alla ordrar och skriver först ut order och sedan produkter i ordern.
         private void getLoggedInCustomerOrders() {
             ArrayList<Order> orders = orderService.getLoggedInCustomerOrders();
 
@@ -215,7 +233,6 @@ import Product.ProductController;
                                 itemTotal);
                     }
 
-
                     System.out.println("----------------------------------");
                     System.out.printf("Total summa för ordern: %.2f kr\n", orderTotal);
                     System.out.println("----------------------------------------------------------------------");
@@ -225,6 +242,7 @@ import Product.ProductController;
 
         }
 
+        // Hämta kunds ordrar via id, skriver ut order, sedan produkter
         private void getCustomerOrdersById(Scanner scanner) {
             System.out.println("Ange kund id: ");
             int customerId = scanner.nextInt();

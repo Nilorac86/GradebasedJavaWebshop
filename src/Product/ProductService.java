@@ -8,11 +8,12 @@ import java.util.stream.Collectors;
 public class ProductService {
 
     ProductRepository productRepository = new ProductRepository();
-
+// Hämtar alla produkter
     public ArrayList<Product> getAllProducts() {
         return productRepository.getAll();
     }
 
+    // Sök produkt via namn
     public ArrayList<Product> getProductByName(String name) {
         ArrayList<Product> products = productRepository.getProductsByName(name);
 
@@ -26,7 +27,7 @@ public class ProductService {
         return products;
     }
 
-
+// Sök produkt via kategori
     public ArrayList<Product> getProductByCategory(String categoryName)  {
         ArrayList<Product> products = productRepository.getProductsByCategory(categoryName);
 
@@ -39,7 +40,7 @@ public class ProductService {
         return products;
     }
 
-
+// uppdatera pris på produkt
     public void updateProductPrice(int productId, double price) {
         if (price <= 0) {
             System.out.println("Pris måste vara större än 0");
@@ -69,10 +70,12 @@ public class ProductService {
 
     }
 
+    // Uppdatera lagersaldo
     public void updateStockQuantity(int productId, int stockQuantity) {
         productRepository.updateStockQuantity(productId, stockQuantity);
     }
 
+    // Lägga till produkt
     public void insertProduct(String name, String description, double price, int stockQuantity) throws SQLException {
 
         if (name == null || name.trim().isEmpty()) {
@@ -97,10 +100,12 @@ public class ProductService {
         System.out.println();
     }
 
+    // Hämta produkt via id
     public Product getProductById(int productId) throws SQLException {
         return productRepository.getProductById(productId);
     }
 
+    // Sök produkter via filter
     public ArrayList<Product> getProductByFilter(String category, String productName, double maxPrice ) {
 
         ArrayList<Product> products = productRepository.getProductsByFilter(category, productName, maxPrice);

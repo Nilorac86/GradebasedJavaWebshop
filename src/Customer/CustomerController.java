@@ -15,10 +15,6 @@ public class CustomerController extends UserController {
     private MainController mainController;
 
 
-//    public CustomerController() {
-//        this.mainController = mainController;
-//    }
-
 // ############################ KUNDMENY ###############################################
     public void runCustomerMenu() throws SQLException {
 
@@ -128,6 +124,7 @@ public class CustomerController extends UserController {
 
 // ####################### METODER ###############################################
 
+    // Skapa kund
     public void createCustomer(Scanner scanner) {
         System.out.println("Ange ett namn:");
         String name = scanner.nextLine();
@@ -143,7 +140,7 @@ public class CustomerController extends UserController {
         customerService.insertUser(name, email, password, phone, address );
     }
 
-
+ // Hämta alla kunder
     private void fetchAllCustomers() {
         ArrayList<Customer> customers = null;
         try {
@@ -152,6 +149,7 @@ public class CustomerController extends UserController {
             throw new RuntimeException(e);
         }
 
+        // Utskrift för varje kund
         for (Customer customer : customers) {
             System.out.println("KundId: " + customer.getId());
             System.out.println("Namn: " + customer.getName());
@@ -165,25 +163,26 @@ public class CustomerController extends UserController {
 
     }
 
-
+// Uppdaterad inloggad kund
     private boolean updateLoggedinCustomer(Scanner scanner) {
 
         System.out.println("Ange din nya e-postadress:");
         String email = scanner.nextLine();
         boolean success = false;
 
+        // Variabel för att hämta inloggad kund
             success = customerService.updateEmail(SessionManager.getInstance().getLoggedInUserId(), email);
 
         System.out.println(success ? "Email har uppdaterats." : "Uppdateringen misslyckades.");
         return success;
     }
 
-
+// Uppdaterar inloggad kunds e-mail.
     private boolean updateCustomerEmail(Scanner scanner) {
         int customerId = -1;
         boolean validInput = false;
 
-        // Loopa tills användaren matar in ett giltigt heltal
+       // Loop tills användare anger ett giltigt heltal
         while (!validInput) {
             System.out.println("Ange ID på den kund som ska uppdateras:");
 
@@ -198,10 +197,11 @@ public class CustomerController extends UserController {
                 customerId = Integer.parseInt(input);
                 validInput = true;
             } catch (NumberFormatException e) {
-                System.out.println("Felaktig inmatning. Ange ett numeriskt ID.");
+                System.out.println("Felaktig inmatning. Ange ett numeriskt ID."); // Felmeddelande om annat än heltal anges.
             }
         }
 
+        // Hämtar kunder som skickas via servicelagret
         Customer customer = customerService.getCustomerById(customerId);
         if (customer == null) {
             System.out.println("Kunden med ID: " + customerId + " finns inte.");
@@ -217,14 +217,14 @@ public class CustomerController extends UserController {
         return success;
     }
 
-
+// Metod hämta kund via id.
     public void getCustomerById(Scanner scanner) {
         System.out.println("Ange id:");
         int id = scanner.nextInt();
         scanner.nextLine();
         Customer customer = customerService.getCustomerById(id);
 
-        if (customer == null) {
+        if (customer == null) { // Om kund inte finns, får användaren ett meddelande.
             System.out.println("Ingen kund hittades med ID: " + id);
         } else {
             System.out.println("KundId: " + customer.getId());
@@ -237,22 +237,22 @@ public class CustomerController extends UserController {
         }
     }
 
-
+// Inloggad kan radera sitt eget konto... Bra eller dåligt?
     private boolean deleteLoggedinCustomer() {
         boolean deleteSuccess = false;
 
-            deleteSuccess = customerService.deleteCustomer();
+            deleteSuccess = customerService.deleteCustomer(); // Via servicelagret
 
         System.out.println(deleteSuccess ? "Kund raderad " : "Kund hittades ej");
-        SessionManager.getInstance().logout();
+        SessionManager.getInstance().logout(); // Loggar ut inloggad kund.
         if (mainController == null) {
             mainController = new MainController();
         }
-        mainController.runMainMenu();
+        mainController.runMainMenu(); // Skickas till huvudmeny i maincontroller.
         return deleteSuccess;
     }
 
-
+    // Radera kund genom id/ Admin
     private boolean deleteCustomerById(Scanner scanner) {
         System.out.println("Ange id på den kund som ska raderas.");
         int idToDelete = scanner.nextInt();

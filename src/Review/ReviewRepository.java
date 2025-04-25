@@ -10,6 +10,7 @@ public class ReviewRepository {
 
     public static final String URL = "jdbc:sqlite:webbutiken.db";
 
+    // Hämta kunds recensioner
     public ArrayList<Review> getCustomerReviews() {
         ArrayList<Review> reviews = new ArrayList<>();
 
@@ -57,6 +58,7 @@ public class ReviewRepository {
     }
 
 
+    // Metod för kontroll om kund köpt produkt
     public boolean hasCustomerPurchasedProduct(int customerId, int productId) {
         String sql = "SELECT 1 FROM orders " +
                 "JOIN orders_products ON orders.order_id = orders_products.order_id " +
@@ -77,6 +79,7 @@ public class ReviewRepository {
         }
     }
 
+    // Lägga till recension
     public void insertReview(int customerId, int productId, int rating, String comment) {
         String sql = "INSERT INTO reviews (customer_id, product_id, rating, comment) VALUES (?, ?, ?, ?)";
 
@@ -94,6 +97,7 @@ public class ReviewRepository {
         }
     }
 
+    // Kontroll metod om kund har recenserat produkten redan
     public boolean isAlreadyReviewed(int customerId, int productId, int orderId) {
         String sql = """
                 SELECT 1 FROM customers\s
@@ -118,7 +122,7 @@ public class ReviewRepository {
         }
     }
 
-
+// Produkts genomsnitts betyg
         public ArrayList<ProductRating> getProductsAverageRatings() {
             ArrayList<ProductRating> productRatings = new ArrayList<>();
 

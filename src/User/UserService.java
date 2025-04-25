@@ -7,6 +7,7 @@ public abstract class UserService {
 
     private final UserRepository userRepository = new UserRepository();
 
+    // Login metod för login
     public <T extends User> T userLogin(String tableName, String loginField, String loginValue, String password, UserMapper<T> mapper) {
         return userRepository.userLogin(tableName, loginField, loginValue, password, mapper);
     }

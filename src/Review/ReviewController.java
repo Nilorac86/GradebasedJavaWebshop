@@ -66,7 +66,7 @@ public class ReviewController {
     }
 
 
-
+// Hämta en kunds recensioner
     private void getCustomersReviews () {
         ArrayList<Review> reviews = reviewService.getCustomerReviews();
 
@@ -88,6 +88,7 @@ public class ReviewController {
 
     }
 
+    // Recensera en köpt produkt
     private void reviewProduct(Scanner scanner) {
         int customerId = SessionManager.getInstance().getLoggedInUserId();
         if (customerId == -1) {
@@ -147,6 +148,7 @@ public class ReviewController {
         reviewService.reviewProduct(productId, orderId, rating, comment);
     }
 
+    // Visa produktens genomsnittliga betyg
     public void showProductRatings() {
         ArrayList<ProductRating> productRatings = reviewService.getProductsWithRatings();
 

@@ -11,33 +11,69 @@ public class OrderRepository {
     public static final String URL = "jdbc:sqlite:webbutiken.db";
 
 
+    // Hämtar alla ordrar
     public ArrayList<Order> getAll() {
-
-
         ArrayList<Order> orders = new ArrayList<>();
 
+        String sql = """
+            SELECT orders.order_id, customers.customer_id, orders.order_date,
+                   products.product_id, products.name, products.description,
+                   products.price, products.stock_quantity,
+                   orders_products.quantity, orders_products.unit_price
+            FROM customers
+            JOIN orders ON customers.customer_id = orders.customer_id
+            JOIN orders_products ON orders.order_id = orders_products.order_id
+            JOIN products ON products.product_id = orders_products.product_id;
+            """;
 
         try (Connection conn = DriverManager.getConnection(URL);
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM orders")) {
-
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
+                // Skapa Product-objekt
+                Product product = new Product(
+                        rs.getInt("product_id"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        rs.getDouble("price"),
+                        rs.getInt("stock_quantity")
+                );
 
-                orders.add(new Order(rs.getInt("order_id"),
-                        rs.getInt("customer_id"),
-                        rs.getDate("order_date")));
+                // Skapa OrderItem
+                OrderItem item = new OrderItem(product, rs.getInt("quantity"));
+
+                int orderId = rs.getInt("order_id");
+                boolean orderExists = false;
+
+                for (Order order : orders) {
+                    if (order.getOrderId() == orderId) {
+                        order.getItems().add(item);
+                        orderExists = true;
+                        break;
+                    }
+                }
+
+                if (!orderExists) {
+                    Order newOrder = new Order(
+                            orderId,
+                            rs.getInt("customer_id"),
+                            rs.getDate("order_date"),
+                            new ArrayList<>());
+
+                    newOrder.getItems().add(item);
+                    orders.add(newOrder);
+                }
             }
 
         } catch (SQLException e) {
-            System.out.println("Något gick fel vid hämtning av alla ordrar " + e.getMessage());
+            System.out.println("Något gick fel vid hämtning av alla ordrar: " + e.getMessage());
         }
 
         return orders;
-
     }
 
-
+// Hämtar en kunds order via kund id
     public ArrayList<Order> getCustomerOrders(int customerId) {
         ArrayList<Order> customerOrders = new ArrayList<>();
         String sql = """
@@ -56,7 +92,6 @@ public class OrderRepository {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    // Skapa en Product-objekt
                     Product product = new Product(
                             rs.getInt("product_id"),
                             rs.getString("name"),
@@ -65,21 +100,18 @@ public class OrderRepository {
                             rs.getInt("stock_quantity")
                     );
 
-                    // Skapa ett OrderItem-objekt
                     OrderItem item = new OrderItem(product, rs.getInt("quantity"));
 
-                    // Kontrollera om en Order redan finns med samma order_id
                     boolean orderExists = false;
                     for (Order order : customerOrders) {
                         if (order.getOrderId() == rs.getInt("order_id")) {
-                            // Lägg till OrderItem i den befintliga ordern
                             order.getItems().add(item);
                             orderExists = true;
                             break;
                         }
                     }
 
-                    // Om ordern inte finns, skapa en ny Order och lägg till det första OrderItem
+
                     if (!orderExists) {
                         Order newOrder = new Order(
                                 rs.getInt("order_id"),
@@ -88,7 +120,7 @@ public class OrderRepository {
                                 new ArrayList<>());
 
 
-                        newOrder.getItems().add(item); // Lägg till första item till ny order
+                        newOrder.getItems().add(item); // Lägg till första produkten i ny order
                         customerOrders.add(newOrder);
                     }
                 }
@@ -100,6 +132,8 @@ public class OrderRepository {
         return customerOrders;
     }
 
+
+    // Skapa en order genererar ett nyckel för order id
     public int createOrder (Order order){
         String sql = "INSERT INTO orders (customer_id, order_date) VALUES (?,?)";
 
@@ -122,6 +156,7 @@ public class OrderRepository {
         return -1;
     }
 
+    // Lägga till produkter till ordern
     public void addOrderItem(int orderId, OrderItem item) {
         String sql = "INSERT INTO orders_products (order_id, product_id, quantity, unit_price) VALUES (?, ?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(URL);

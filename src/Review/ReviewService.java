@@ -7,7 +7,7 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository = new ReviewRepository();
 
-
+    // hämtar kunds recensioner
     public ArrayList<Review> getCustomerReviews (){
         try {
             return reviewRepository.getCustomerReviews();
@@ -17,7 +17,7 @@ public class ReviewService {
         }
     }
 
-
+// recensera produkter
     public void reviewProduct(int productId, int orderId, int rating, String comment) {
         int customerId = SessionManager.getInstance().getLoggedInUserId();
 
@@ -44,6 +44,7 @@ public class ReviewService {
             System.out.println();
     }
 
+    // Hämta recenserade produkter
     public ArrayList<ProductRating> getProductsWithRatings() {
         try {
             return reviewRepository.getProductsAverageRatings();

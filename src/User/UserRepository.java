@@ -13,7 +13,7 @@ import Mapper.UserMapper;
 public class UserRepository {
 
     public static final String URL = "jdbc:sqlite:webbutiken.db";
-
+// Metod för login
     public <T extends User> T userLogin(String tableName, String loginField, String loginValue, String password, UserMapper<T> mapper) {
         String sql = "SELECT * FROM " + tableName + " WHERE " + loginField+ " = ? AND password = ?";
 

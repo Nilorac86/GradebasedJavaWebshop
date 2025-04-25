@@ -9,6 +9,7 @@ public class CustomerRepository extends UserRepository {
 
    public static final String URL = "jdbc:sqlite:webbutiken.db";
 
+   // Hämta alla kunder i en Array
     public ArrayList<Customer> getAll() {
 
         ArrayList<Customer> customers = new ArrayList<>();
@@ -17,7 +18,7 @@ public class CustomerRepository extends UserRepository {
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery("SELECT * FROM customers")) {
 
-            while (rs.next()) {
+            while (rs.next()) { // Så länge nästa rad hämtas en ny kund
                 customers.add(new Customer(rs.getInt("customer_id"),
                         rs.getString("name"),
                         rs.getString("email"),
@@ -27,14 +28,14 @@ public class CustomerRepository extends UserRepository {
 
             }
 
-        } catch (SQLException e) {
+        } catch (SQLException e) { // Felmeddelande
             System.out.println("Fel vid hämtning av alla kunder: " + e.getMessage());
             return null;
         }
         return customers;
     }
 
-
+// Query hämta kund via id.
     public Customer getCustomerById(int customerId) {
         String sql = "SELECT * FROM customers WHERE customer_id = ?";
 
@@ -61,7 +62,7 @@ public class CustomerRepository extends UserRepository {
         return null;
     }
 
-
+// Query skapa kund
     public void insertCustomer(String name, String email, String password, String phone, String address)  {
         String sql = "INSERT INTO customers(name, email, password, phone, address) VALUES (?,?,?,?,?)";
 
@@ -80,6 +81,7 @@ public class CustomerRepository extends UserRepository {
         }
     }
 
+    // Query updatera kund e-mail
     public boolean updateEmail(int customer_id, String email) {
         String sql = "UPDATE customers SET email = ? WHERE customer_id = ? ";
 
@@ -97,6 +99,7 @@ public class CustomerRepository extends UserRepository {
         return false;
     }
 
+    // Query radera kund.
     public boolean deleteCustomer(int customerId)  {
         String sql = "DELETE FROM customers WHERE customer_id = ?";
 
@@ -113,6 +116,7 @@ public class CustomerRepository extends UserRepository {
         return false;
     }
 
+    // Query för kontroll av e-mail finns eller ej
     public boolean isEmailTaken(String email)  {
         String sql = "SELECT COUNT(*) FROM customers WHERE email = ?";
 

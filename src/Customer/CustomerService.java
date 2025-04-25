@@ -9,21 +9,19 @@ import User.UserService;
 public class CustomerService extends UserService {
 
    private final CustomerMapper customerMapper = new CustomerMapper();
-
-    private final CustomerRepository customerRepository = new CustomerRepository();
+   private final CustomerRepository customerRepository = new CustomerRepository();
 
     @Override
     public User userLogin( String loginValue, String password) {
-        return super.userLogin("customers", "email", loginValue, password, customerMapper); // Skicka med loginField
+        return super.userLogin("customers", "email", loginValue, password, customerMapper);
     }
 
-
-
+    // Hämtar lista av kunder och skickar vidare.
     public ArrayList<Customer> getAllCustomers() throws SQLException {
         return customerRepository.getAll();
     }
 
-
+// Lägg till kund, med verifiering på e-mail, lösenord, namn.
     public void insertUser(String name, String email, String password, String address, String phone) {
 
         if (name.isEmpty()) {
@@ -55,7 +53,7 @@ public class CustomerService extends UserService {
         System.out.println("Kund har lagts till!");
     }
 
-    // Uppdatera användarens e-postadress
+    // Uppdatera användarens e-postadress mycket validering här med.
     public boolean updateEmail(int loggedInCustomerId, String email)  {
 
         if (isEmailTaken(email)) {
@@ -68,8 +66,8 @@ public class CustomerService extends UserService {
             return false;
         }
 
-        int customerId = SessionManager.getInstance().getLoggedInUserId(); // Hämta inloggad kunds ID från sessionen
-        if (customerId == -1) {
+        int customerId = SessionManager.getInstance().getLoggedInUserId(); // Hämta inloggad kunds ID.
+        if (customerId == -1) { // Kontroll om användare inte finns.
             System.out.println("Ingen användare är inloggad.");
             return false;
         }
@@ -77,12 +75,13 @@ public class CustomerService extends UserService {
          return customerRepository.updateEmail(customerId, email);
     }
 
+    // Hämta kund via id
     public Customer getCustomerById(int customerId){
         return customerRepository.getCustomerById(customerId);
     }
 
 
-    // Radera användare (endast om inloggad)
+    // Radera inloggad kund
     public boolean deleteCustomer() {
         int customerId = SessionManager.getInstance().getLoggedInUserId();
         if (customerId == -1) {
@@ -93,7 +92,7 @@ public class CustomerService extends UserService {
     }
 
 
-    // Kontrollera om en e-postadress är korrekt
+    // Kontrollera om en e-mail är korrekt
     private boolean isEmailValid(String email) {
         String regex = "^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$";
         return email.matches(regex);
@@ -105,11 +104,12 @@ public class CustomerService extends UserService {
         return password.matches(regex);
     }
 
-
+// Kontrollera om en e-mail redan finns i databasen
     private boolean isEmailTaken(String email) {
         return customerRepository.isEmailTaken(email);
     }
 
+    // Radera kund via id.
     public boolean deleteCustomerById(int idToDelete) throws SQLException {
         return customerRepository.deleteCustomer(idToDelete);
     }

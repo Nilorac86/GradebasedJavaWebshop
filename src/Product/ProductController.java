@@ -134,6 +134,7 @@ public class ProductController {
 
     // ########################### METODER PRODUKTER ####################################
 
+    // Hämta alla produkter
     public void fetchAllProducts() {
         ArrayList<Product> products = productService.getAllProducts();
 
@@ -147,6 +148,7 @@ public class ProductController {
         }
     }
 
+    // Sök produkter via produktnamn
     private void seachProductByName(Scanner scanner) {
         try {
             System.out.println("Skriv in ett produktnamn:");
@@ -171,6 +173,7 @@ public class ProductController {
     }
 
 
+    // Söka produkter via kategori
     private void searchProductByCategory(Scanner scanner) {
         System.out.println("Sök produkt via kategori:");
         String categoryName = scanner.nextLine();
@@ -196,6 +199,7 @@ public class ProductController {
     }
 
 
+    // Uppdatera produkt pris
     public void updateProductPrice(Scanner scanner) {
         System.out.println("Ange ID på den produkt som ska uppdateras:");
 
@@ -246,7 +250,7 @@ public class ProductController {
     }
 
 
-
+// Lägga till produkt
     private void insertProduct(Scanner scanner) {
         System.out.println("Ange namn på produkten:");
         String name = scanner.nextLine();
@@ -306,6 +310,7 @@ public class ProductController {
 
     }
 
+    // Hämta produkter via filter, namn, kategori och pris
     private void getProductsByFilter(Scanner scanner) {
         System.out.println("Ange kategori, eller tryck enter");
         String category = scanner.nextLine();
@@ -334,7 +339,7 @@ public class ProductController {
         }
     }
 
-
+// Validerings metod.
     private double getValidPrice(Scanner scanner) {
         double maxPrice = -1;
         while (maxPrice < 0) {
