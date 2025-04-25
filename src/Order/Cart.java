@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 
     public class Cart {
-        private HashMap<Integer, CartItem> cartItems; // Nyckel: produktens ID, Värde: CartItem (produkt och kvantitet)
+        private final HashMap<Integer, CartItem> cartItems; // Nyckel: produktens ID, Värde: CartItem (produkt och kvantitet)
 
 
         public Cart() {

@@ -11,7 +11,7 @@ public class OrderRepository {
     public static final String URL = "jdbc:sqlite:webbutiken.db";
 
 
-    public ArrayList<Order> getAll() throws SQLException {
+    public ArrayList<Order> getAll() {
 
 
         ArrayList<Order> orders = new ArrayList<>();
@@ -30,9 +30,7 @@ public class OrderRepository {
             }
 
         } catch (SQLException e) {
-            // Logga eller kasta vidare exception
-            System.err.println("SQL Exception occurred while fetching orders: " + e.getMessage());
-            throw e;  // Rethrow or handle in an appropriate way
+            System.out.println("Något gick fel vid hämtning av alla ordrar " + e.getMessage());
         }
 
         return orders;
@@ -42,13 +40,14 @@ public class OrderRepository {
 
     public ArrayList<Order> getCustomerOrders(int customerId) {
         ArrayList<Order> customerOrders = new ArrayList<>();
-        String sql = "SELECT orders.order_id, customers.customer_id, orders.order_date, products.*, orders_products.quantity, orders_products.unit_price \n" +
-                "                FROM customers\n" +
-                "                JOIN orders ON customers.customer_id = orders.customer_id \n" +
-                "                JOIN \n" +
-                "                orders_products ON orders.order_id = orders_products.order_id \n" +
-                "                JOIN products ON products.product_id = orders_products.product_id\n" +
-                "                WHERE customers.customer_id = ?;";
+        String sql = """
+                SELECT orders.order_id, customers.customer_id, orders.order_date, products.*, orders_products.quantity, orders_products.unit_price\s
+                                FROM customers
+                                JOIN orders ON customers.customer_id = orders.customer_id\s
+                                JOIN\s
+                                orders_products ON orders.order_id = orders_products.order_id\s
+                                JOIN products ON products.product_id = orders_products.product_id
+                                WHERE customers.customer_id = ?;""";
 
         try (Connection conn = DriverManager.getConnection(URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -94,15 +93,14 @@ public class OrderRepository {
                     }
                 }
             }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        }catch (SQLException e) {
+                System.out.println("Något gick fel när order skulle hämtas." + e.getMessage());
+            }
 
         return customerOrders;
     }
 
-    public int createOrder (Order order)throws SQLException{
+    public int createOrder (Order order){
         String sql = "INSERT INTO orders (customer_id, order_date) VALUES (?,?)";
 
         try (Connection conn = DriverManager.getConnection(URL);
@@ -118,11 +116,13 @@ public class OrderRepository {
                 return keys.getInt(1);
             }
 
+        } catch (SQLException e){
+            System.out.println("Något gick fel när order skulle läggas." + e.getMessage());
         }
         return -1;
     }
 
-    public void addOrderItem(int orderId, OrderItem item) throws SQLException {
+    public void addOrderItem(int orderId, OrderItem item) {
         String sql = "INSERT INTO orders_products (order_id, product_id, quantity, unit_price) VALUES (?, ?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -132,6 +132,8 @@ public class OrderRepository {
             pstmt.setInt(3, item.getQuantity());
             pstmt.setDouble(4, item.getUnitPrice());
             pstmt.executeUpdate();
+        }catch (SQLException e){
+            System.out.println("Något gick när produkt skulle läggas till." + e.getMessage());
         }
     }
 

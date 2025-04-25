@@ -8,7 +8,7 @@ public class OrderService {
 
     OrderRepository orderRepository = new OrderRepository();
 
-    public ArrayList<Order> getAllOrders () throws SQLException {
+    public ArrayList<Order> getAllOrders ()  {
         return orderRepository.getAll();
 
     }
@@ -17,15 +17,15 @@ public class OrderService {
         return orderRepository.getCustomerOrders(SessionManager.getInstance().getLoggedInUserId());
     }
 
-    public ArrayList<Order> getCustomerOrders(int customerId)throws SQLException{
+    public ArrayList<Order> getCustomerOrders(int customerId){
         return orderRepository.getCustomerOrders(customerId);
     }
 
-    public int createOrder(Order order)throws SQLException{
+    public int createOrder(Order order){
         return orderRepository.createOrder(order);
     }
 
-    public void addOrderItem(int orderId, OrderItem item) throws SQLException {
+    public void addOrderItem(int orderId, OrderItem item) {
         orderRepository.addOrderItem(orderId, item);
     }
 

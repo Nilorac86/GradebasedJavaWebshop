@@ -1,22 +1,19 @@
 package Presentation;
-
-import Admin.AdminController;
 import Customer.CustomerController;
 import Order.OrderController;
 import Product.ProductController;
 import Review.ReviewController;
 import Session.SessionManager;
-
 import java.sql.SQLException;
 import java.util.Scanner;
 
     public class MainController {
 
-        private LoginController loginController = new LoginController();
-        private CustomerController customerController = new CustomerController();
-        private ProductController productController = new ProductController();
-        private OrderController orderController = new OrderController();
-        private ReviewController reviewController = new ReviewController();
+        private final LoginController loginController = new LoginController();
+        private final CustomerController customerController = new CustomerController();
+        private final ProductController productController = new ProductController();
+        private final OrderController orderController = new OrderController();
+        private final ReviewController reviewController = new ReviewController();
 
         private String role;
 
@@ -37,6 +34,7 @@ import java.util.Scanner;
             boolean running = true;
 
             while (running) {
+                System.out.println();
                 System.out.println("=== HUVUDMENY ===");
                 System.out.println("1. Logga in");
                 System.out.println("2. Skapa konto");
@@ -64,11 +62,7 @@ import java.util.Scanner;
                         break;
 
                     case "2":
-                        try {
                             customerController.createCustomer(scanner);
-                        } catch (SQLException e) {
-                            System.out.println("Fel vid skapande av nytt konto: " + e.getMessage());
-                        }
                         break;
 
                     case "0":
@@ -97,6 +91,7 @@ import java.util.Scanner;
             Scanner scanner = new Scanner(System.in);
 
             while (true) {
+                System.out.println();
                 System.out.println("=== HUVUDMENY KUND ===");
                 System.out.println("1. Kundmeny");
                 System.out.println("2. Produktmeny");
@@ -113,7 +108,6 @@ import java.util.Scanner;
                     case "1":
                        customerController.runCustomerMenu();
                        break;
-
                     case "2":
                        productController.runMeny();
                         break;
@@ -132,10 +126,8 @@ import java.util.Scanner;
                         System.exit(0);
                         System.out.println("Programmet avslutas");
                         break;
-
                     default:
-                        System.out.println("Ogiltigt val.");
-
+                        System.out.println("\"Välj ett alternativ från menyn.\"");
                 }
 
                 } catch (SQLException e) {
@@ -151,6 +143,7 @@ import java.util.Scanner;
             Scanner scanner = new Scanner(System.in);
 
             while (true) {
+                System.out.println();
                 System.out.println("=== HUVUDMENY ADMIN ===");
                 System.out.println("1. Kundmeny");
                 System.out.println("2. Produktmeny");
@@ -186,7 +179,7 @@ import java.util.Scanner;
                             break;
 
                         default:
-                            System.out.println("Ogiltigt val.");
+                            System.out.println("Välj ett alternativ från menyn.");
 
                     }
 

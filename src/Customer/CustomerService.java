@@ -8,9 +8,9 @@ import User.UserService;
 
 public class CustomerService extends UserService {
 
-   private CustomerMapper customerMapper = new CustomerMapper();
+   private final CustomerMapper customerMapper = new CustomerMapper();
 
-    private CustomerRepository customerRepository = new CustomerRepository();
+    private final CustomerRepository customerRepository = new CustomerRepository();
 
     @Override
     public User userLogin( String loginValue, String password) {
@@ -24,15 +24,25 @@ public class CustomerService extends UserService {
     }
 
 
-    public void insertUser(String name, String email, String phone, String address, String password)
-            throws SQLException {
-        if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
-            System.out.println("Namn, email och lösenord måste fyllas i.");
+    public void insertUser(String name, String email, String password, String address, String phone) {
+
+        if (name.isEmpty()) {
+            System.out.println("Namn måste fyllas i.");
+            return;
+        }
+
+        if ( email.isEmpty()) {
+            System.out.println("E-mail måste fyllas i.");
+            return;
+        }
+        if ( password.isEmpty() || !isPasswordValid(password) ) {
+            System.out.println("Lösenord måste fyllas i. Lösenordet måste innehålla minst 8 tecken, " +
+                    "en storbokstav, en liten bokstav samt en siffra");
             return;
         }
 
         if (isEmailTaken(email)) {
-            System.out.println("Den e-mailen du angav finns redan registrerad");
+            System.out.println("Den e-mail du angav finns redan registrerad");
             return;
         }
 
@@ -41,17 +51,12 @@ public class CustomerService extends UserService {
             return;
         }
 
-        if (!isPasswordValid(password)) {
-            System.out.println("Lösenordet måste innehålla minst 8 tecken, en storbokstav, en liten bokstav samt en siffra");
-            return;
-        }
-
-        customerRepository.insertCustomer(name, email, phone, address, password);
+        customerRepository.insertCustomer(name, email, password, address, phone);
         System.out.println("Kund har lagts till!");
     }
 
     // Uppdatera användarens e-postadress
-    public boolean updateEmail(int loggedInCustomerId, String email) throws SQLException {
+    public boolean updateEmail(int loggedInCustomerId, String email)  {
 
         if (isEmailTaken(email)) {
             System.out.println("Den e-mail du angav finns redan");
@@ -69,11 +74,16 @@ public class CustomerService extends UserService {
             return false;
         }
 
-        return customerRepository.updateEmail(customerId, email);
+         return customerRepository.updateEmail(customerId, email);
     }
 
+    public Customer getCustomerById(int customerId){
+        return customerRepository.getCustomerById(customerId);
+    }
+
+
     // Radera användare (endast om inloggad)
-    public boolean deleteCustomer() throws SQLException {
+    public boolean deleteCustomer() {
         int customerId = SessionManager.getInstance().getLoggedInUserId();
         if (customerId == -1) {
             System.out.println("Ingen användare är inloggad.");
@@ -96,7 +106,7 @@ public class CustomerService extends UserService {
     }
 
 
-    private boolean isEmailTaken(String email) throws SQLException{
+    private boolean isEmailTaken(String email) {
         return customerRepository.isEmailTaken(email);
     }
 

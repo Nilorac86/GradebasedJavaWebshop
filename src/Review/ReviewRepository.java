@@ -50,9 +50,7 @@ public class ReviewRepository {
             }
 
         } catch (SQLException e) {
-            System.out.println("Något gick fel vid hämtning ");
-            e.printStackTrace();
-            ;
+            System.out.println("Fel vid hämtning av recensioner: " + e.getMessage());
         }
 
         return reviews;
@@ -72,9 +70,10 @@ public class ReviewRepository {
             pstmt.setInt(2, productId);
 
             ResultSet rs = pstmt.executeQuery();
-            return rs.next(); // true om det finns ett köp
+            return rs.next();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("Fel vid kontroll av köpt produkt: " + e.getMessage());
+            return false;
         }
     }
 
@@ -91,16 +90,17 @@ public class ReviewRepository {
             pstmt.setString(4, comment);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("Fel vid insättning av recension: " + e.getMessage());
         }
     }
 
     public boolean isAlreadyReviewed(int customerId, int productId, int orderId) {
-        String sql = "SELECT 1 FROM customers \n" +
-                "JOIN reviews ON customers.customer_id = reviews.customer_id\n" +
-                "JOIN products ON reviews.product_id = products.product_id\n" +
-                "JOIN orders_products ON orders_products.product_id= orders_products.product_id WHERE " +
-                "reviews.customer_id= ? AND reviews.product_id = ? AND orders_products.product_id = ?";
+        String sql = """
+                SELECT 1 FROM customers\s
+                JOIN reviews ON customers.customer_id = reviews.customer_id
+                JOIN products ON reviews.product_id = products.product_id
+                JOIN orders_products ON orders_products.product_id= orders_products.product_id WHERE \
+                reviews.customer_id= ? AND reviews.product_id = ? AND orders_products.product_id = ?""";
 
         try (Connection conn = DriverManager.getConnection(URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -111,13 +111,59 @@ public class ReviewRepository {
 
             ResultSet rs = pstmt.executeQuery();
             return rs.next();
+
         } catch (SQLException e) {
-            throw new RuntimeException("Kunde inte kontrollera om recension redan finns.", e);
+            System.out.println("Fel vid kontroll om recension redan finns: " + e.getMessage());
+            return false;
         }
     }
 
 
-}
+        public ArrayList<ProductRating> getProductsAverageRatings() {
+            ArrayList<ProductRating> productRatings = new ArrayList<>();
+
+            String sql = "SELECT p.product_id, p.name, p.description, p.price, p.stock_quantity, " +
+                    "AVG(r.rating) as avg_rating, COUNT(r.review_id) as rating_count " +
+                    "FROM products p " +
+                    "LEFT JOIN reviews r ON p.product_id = r.product_id " +
+                    "GROUP BY p.product_id " +
+                    "ORDER BY avg_rating DESC";
+
+            try (
+                    Connection conn = DriverManager.getConnection(URL);
+                    PreparedStatement pstmt = conn.prepareStatement(sql)
+            ) {
+                ResultSet rs = pstmt.executeQuery();
+
+                while (rs.next()) {
+                    Product product = new Product(
+                            rs.getInt("product_id"),
+                            rs.getString("name"),
+                            rs.getString("description"),
+                            rs.getDouble("price"),
+                            rs.getInt("stock_quantity")
+                    );
+
+                    double avgRating = 0.0;
+                    if (rs.getObject("avg_rating") != null) {
+                        avgRating = rs.getDouble("avg_rating");
+                    }
+
+                    int ratingCount = rs.getInt("rating_count");
+
+                    productRatings.add(new ProductRating(product, avgRating, ratingCount));
+                }
+
+            } catch (SQLException e) {
+                System.out.println("Fel vid hämtning av produkter med betyg: " + e.getMessage());
+            }
+
+            return productRatings;
+        }
+    }
+
+
+
 
 
 

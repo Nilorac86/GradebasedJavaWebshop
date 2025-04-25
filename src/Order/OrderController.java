@@ -28,7 +28,7 @@ import Product.ProductController;
             boolean running = true;
             while (running){
 
-
+                System.out.println();
                 System.out.println("=== ORDERMENY ===");
                 System.out.println("1. Se dina ordrar ");
                 System.out.println("2. Gå till kundvagn");
@@ -75,7 +75,7 @@ import Product.ProductController;
             Scanner scanner = new Scanner(System.in);
 
             while (true){
-
+                System.out.println();
                 System.out.println("=== KUNDVAGN ===");
                 System.out.println("1. Lägga produkter i kundvagn");
                 System.out.println("2. Ta bort produkt från kundvagn");
@@ -84,7 +84,7 @@ import Product.ProductController;
                 System.out.println("5. Visa kundvagn");
                 System.out.println("6. Tillbaka till ordermeny");
                 System.out.println("0. Logga ut");
-                System.out.println("9. Avsluta programet!");
+                System.out.println("9. Avsluta programmet!");
                 System.out.println("Välj ett alternativ:");
 
                 String select = scanner.nextLine();
@@ -134,7 +134,7 @@ import Product.ProductController;
             Scanner scanner = new Scanner(System.in);
 
             while (true){
-
+                System.out.println();
                 System.out.println("Orderhantering meny");
                 System.out.println("1. Hämta alla ordrar");
                 System.out.println("2. Hämta en kunds ordrar");
@@ -177,7 +177,7 @@ import Product.ProductController;
 
 // ################################## METODER #####################################################
 
-        private void fetchAllOrders() throws SQLException {
+        private void fetchAllOrders() {
             ArrayList<Order> orders = orderService.getAllOrders();
             for (Order order : orders) {
                 System.out.println("OrderId: " + order.getOrderId() + ", order datum: " + order.getOrderDate());
@@ -226,35 +226,32 @@ import Product.ProductController;
         }
 
         private void getCustomerOrdersById(Scanner scanner) {
-            try {
-                System.out.println("Ange kund id: ");
-                int customerId = scanner.nextInt();
-                scanner.nextLine();
-                ArrayList<Order> orders = orderService.getCustomerOrders(customerId);
+            System.out.println("Ange kund id: ");
+            int customerId = scanner.nextInt();
+            scanner.nextLine();
+            ArrayList<Order> orders = orderService.getCustomerOrders(customerId);
 
 
-                for (Order order : orders) {
-                    System.out.println("Order ID: " + order.getOrderId());
-                    System.out.println("Order Datum: " + order.getOrderDate());
-                    System.out.println("Produkter i denna order:");
+            for (Order order : orders) {
+                System.out.println("Order ID: " + order.getOrderId());
+                System.out.println("Order Datum: " + order.getOrderDate());
+                System.out.println("Produkter i denna order:");
 
 
-                    for (OrderItem oi : order.getItems()) {
+                for (OrderItem oi : order.getItems()) {
 
-                        System.out.printf("Produkt: %s | Beskrivning: %s | Antal: %d | Enhetspris: %.2f\n",
-                                oi.getProduct().getName(),
-                                oi.getProduct().getDescription(),
-                                oi.getQuantity(),
-                                oi.getUnitPrice());
-                    }
-                    System.out.println("----------------------------------");
+                    System.out.printf("Produkt: %s | Beskrivning: %s | Antal: %d | Enhetspris: %.2f\n",
+                            oi.getProduct().getName(),
+                            oi.getProduct().getDescription(),
+                            oi.getQuantity(),
+                            oi.getUnitPrice());
                 }
-            } catch (SQLException e) {
-                throw new RuntimeException("Kunde inte hämta kundens ordrar", e);
+                System.out.println("----------------------------------");
             }
         }
 
-        private void createOrderFromCart() throws SQLException {
+
+        private void createOrderFromCart() {
             int customerId = SessionManager.getInstance().getLoggedInUserId();
 
             if (customerId == -1) {
@@ -310,7 +307,7 @@ import Product.ProductController;
                 if (product != null) {
 
                     if (product.getStockQuantity() >= quantity) {
-                        cart.addProduct(product, quantity); // <-- korrekt här
+                        cart.addProduct(product, quantity);
                         System.out.println("Produkten har lagts till i kundvagnen.");
 
                     } else {

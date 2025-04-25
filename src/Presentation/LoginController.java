@@ -10,8 +10,8 @@ import java.util.Scanner;
 public class LoginController {
 
 
-    private CustomerService customerService = new CustomerService();
-    private AdminService adminService = new AdminService();
+    private final CustomerService customerService = new CustomerService();
+    private final AdminService adminService = new AdminService();
 
     public void runLoginMeny() throws SQLException {
         Scanner scanner = new Scanner(System.in);

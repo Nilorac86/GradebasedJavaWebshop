@@ -12,8 +12,8 @@ import java.util.Scanner;
 
 public class ReviewController {
 
-    private OrderService orderService = new OrderService();
-   private ReviewService reviewService = new ReviewService();
+    private final OrderService orderService = new OrderService();
+   private final ReviewService reviewService = new ReviewService();
    private MainController mainController;
 
     public void runCustomerMenu() throws SQLException {
@@ -22,9 +22,11 @@ public class ReviewController {
 
         while (true) {
 
+            System.out.println();
             System.out.println("=== RECENSIONER ===");
             System.out.println("1. Se dina recensioner");
             System.out.println("2. Lämna en recension");
+            System.out.println("3. Se alla produkters betyg");
             System.out.println("3. Tillbaka till huvudmenyn");
             System.out.println("0. Logga ut");
             System.out.println("9. Avsluta programmet");
@@ -40,17 +42,17 @@ public class ReviewController {
                 case "2":
                     reviewProduct(scanner);
                     break;
-                case "3":
+                case "3" :
+                    showProductRatings();
+                    break;
+                case "4":
                     if ( mainController == null){
                         mainController = new MainController();
                     }
                     mainController.mainCustomerMenu();
                     break;
-                case "4":
-
-                    break;
                 case "0":
-                    SessionManager.getInstance().logout(); // Logga ut användaren
+                    SessionManager.getInstance().logout();
                     System.out.println("Du har loggats ut.");
                     System.exit(0);
                     break;
@@ -145,4 +147,29 @@ public class ReviewController {
         reviewService.reviewProduct(productId, orderId, rating, comment);
     }
 
+    public void showProductRatings() {
+        ArrayList<ProductRating> productRatings = reviewService.getProductsWithRatings();
+
+        if (productRatings.isEmpty()) {
+            System.out.println("Inga produkter hittades.");
+            return;
+        }
+
+        System.out.println("=== PRODUKTER OCH BETYG ===");
+        for (ProductRating pr : productRatings) {
+            Product p = pr.getProduct();
+            System.out.println("----------------------------------");
+            System.out.println("Produkt ID: " + p.getProductId());
+            System.out.println("Namn: " + p.getName());
+            System.out.println("Pris: " + p.getPrice() + " kr");
+
+            if (pr.getRatingCount() > 0) {
+                System.out.printf("Genomsnittligt betyg: %.1f/5 (%d omdömen)%n",
+                        pr.getAverageRating(), pr.getRatingCount());
+            } else {
+                System.out.println("Genomsnittligt betyg: Inga omdömen än");
+            }
+        }
+        System.out.println("----------------------------------");
+    }
 }

@@ -6,7 +6,7 @@ import User.UserService;
 
 public class AdminService extends UserService {
 
-    private AdminRepository adminRepository = new AdminRepository();
+    private final AdminRepository adminRepository = new AdminRepository();
 
     AdminMapper adminMapper = new AdminMapper();
 

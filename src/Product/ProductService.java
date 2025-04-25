@@ -4,16 +4,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-// En klass vars enda ansvar är att skicka queris till databasen och hantera svaren.
+// En klass vars enda ansvar är att skicka queries till databasen och hantera svaren.
 public class ProductService {
 
     ProductRepository productRepository = new ProductRepository();
 
-    public ArrayList<Product> getAllProducts() throws SQLException {
+    public ArrayList<Product> getAllProducts() {
         return productRepository.getAll();
     }
 
-    public ArrayList<Product> getProductByName(String name) throws SQLException {
+    public ArrayList<Product> getProductByName(String name) {
         ArrayList<Product> products = productRepository.getProductsByName(name);
 
         if (products == null || products.isEmpty()) {
@@ -27,7 +27,7 @@ public class ProductService {
     }
 
 
-    public ArrayList<Product> getProductByCategory(String categoryName) throws SQLException {
+    public ArrayList<Product> getProductByCategory(String categoryName)  {
         ArrayList<Product> products = productRepository.getProductsByCategory(categoryName);
 
         if (products == null || products.isEmpty()) {
@@ -40,11 +40,11 @@ public class ProductService {
     }
 
 
-    public boolean updateProductPrice(int productId, double price) throws SQLException {
+    public void updateProductPrice(int productId, double price) {
         if (price <= 0) {
             System.out.println("Pris måste vara större än 0");
             System.out.println();
-            return false;
+            return;
         }
 
         Product product = productRepository.getProductById(productId);
@@ -52,7 +52,7 @@ public class ProductService {
         if (product == null) {
             System.out.println("Produkt med ID " + productId + " hittades ej.");
             System.out.println();
-            return false;
+            return;
         }
 
         boolean success = productRepository.updateProductPrice(productId, price);
@@ -67,10 +67,9 @@ public class ProductService {
 
         }
 
-        return success;
     }
 
-    public void updateStockQuantity(int productId, int stockQuantity) throws SQLException {
+    public void updateStockQuantity(int productId, int stockQuantity) {
         productRepository.updateStockQuantity(productId, stockQuantity);
     }
 
@@ -117,9 +116,6 @@ public class ProductService {
                     .filter(p -> p.getPrice() <= maxPrice)
                     .collect(Collectors.toList());
         }
-
-
-
 
 }
 

@@ -65,5 +65,3 @@ public class Order {
 }
 
 
-// lägga order, ha kund id, sedan behöver vi order id, för att lägga till produkter och sedan validera stock och sedan
-// redigera stock när. rada upp som sevdokodsgrej. Order är svårast.

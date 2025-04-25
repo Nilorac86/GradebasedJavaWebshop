@@ -15,9 +15,9 @@ public class CustomerController extends UserController {
     private MainController mainController;
 
 
-    public CustomerController() {
-        this.mainController = mainController;
-    }
+//    public CustomerController() {
+//        this.mainController = mainController;
+//    }
 
 // ############################ KUNDMENY ###############################################
     public void runCustomerMenu() throws SQLException {
@@ -26,6 +26,7 @@ public class CustomerController extends UserController {
 
         while (true) {
 
+            System.out.println();
             System.out.println("=== KUNDMENY INSTÄLLNINGAR ===");
             System.out.println("1.Uppdatera din email ");
             System.out.println("2. Radera konto");
@@ -39,10 +40,10 @@ public class CustomerController extends UserController {
 
             switch (select) {
                 case "1":
-                    updateCustomer(scanner);
+                    updateLoggedinCustomer(scanner);
                     break;
                 case "2":
-                    deleteCustomer();
+                    deleteLoggedinCustomer();
                     break;
                 case "3":
                     if ( mainController == null){
@@ -72,12 +73,14 @@ public class CustomerController extends UserController {
 
         while (true) {
 
+            System.out.println();
             System.out.println("=== ADMIN KUNDMENY ===");
             System.out.println("1. Hämta alla kunder");
             System.out.println("2. Hämta en kund efter id");
             System.out.println("3. Lägg till en ny kund");
             System.out.println("4. Uppdatera kunds email");
             System.out.println("5. Radera användare");
+            System.out.println("6. Tillbaka till huvudmeny");
             System.out.println("0. Logga ut");
             System.out.println("9. Avsluta hela programmet");
             System.out.println("Välj ett alternativ:");
@@ -85,7 +88,6 @@ public class CustomerController extends UserController {
 
             String select = scanner.nextLine();
 
-            try {
             switch (select) {
                 case "1":
                     fetchAllCustomers();
@@ -102,6 +104,9 @@ public class CustomerController extends UserController {
                 case "5":
                     deleteCustomerById(scanner);
                 case "6":
+                    if ( mainController == null){
+                        mainController = new MainController();
+                    }
                     mainController.mainAdminMenu();
                 case "0":
                     SessionManager.getInstance().logout();
@@ -116,29 +121,28 @@ public class CustomerController extends UserController {
                     System.out.println("Välj ett alternativ från menyn.");
             }
 
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
+
         }
     }
 
 
 // ####################### METODER ###############################################
 
-    public void createCustomer(Scanner scanner) throws SQLException {
+    public void createCustomer(Scanner scanner) {
         System.out.println("Ange ett namn:");
         String name = scanner.nextLine();
         System.out.println("Ange din email:");
         String email = scanner.nextLine();
-        System.out.println("Ange ett lösenord:");      // Flytta upp lösenordet hit
+        System.out.println("Ange ett lösenord:");
         String password = scanner.nextLine();
         System.out.println("Ange ett telefonnummer:");
         String phone = scanner.nextLine();
         System.out.println("Ange din adress:");
         String address = scanner.nextLine();
 
-        customerService.insertUser(name, email, password, phone, address);
+        customerService.insertUser(name, email, password, phone, address );
     }
+
 
     private void fetchAllCustomers() {
         ArrayList<Customer> customers = null;
@@ -151,49 +155,65 @@ public class CustomerController extends UserController {
         for (Customer customer : customers) {
             System.out.println("KundId: " + customer.getId());
             System.out.println("Namn: " + customer.getName());
-            System.out.println("Lösenord : " + customer.getPassword());
             System.out.println("Email: " + customer.getEmail());
             System.out.println("Adress: " + customer.getAddress());
             System.out.println("Telefonnummer: " + customer.getPhone());
+            System.out.println("Lösenord : " + customer.getPassword());
 
             System.out.println();
-
-
         }
 
     }
 
-    private boolean updateCustomer(Scanner scanner) {
+
+    private boolean updateLoggedinCustomer(Scanner scanner) {
 
         System.out.println("Ange din nya e-postadress:");
         String email = scanner.nextLine();
         boolean success = false;
 
-        try {
-            success = customerService.updateEmail(SessionManager.getInstance().getLoggedInUserId(),email);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+            success = customerService.updateEmail(SessionManager.getInstance().getLoggedInUserId(), email);
 
-        System.out.println(success ? "Email har uppdaterats." : "Kund hittades ej.");
+        System.out.println(success ? "Email har uppdaterats." : "Uppdateringen misslyckades.");
         return success;
     }
 
-    private boolean updateCustomerEmail(Scanner scanner){
-        System.out.println("Ange id på den kund som ska uppdateras");
-        int customerId = scanner.nextInt();
-        scanner.nextLine();
-        System.out.println("Ange din nya e-postadress:");
-        String email = scanner.nextLine();
-        boolean success = false;
 
-        try {
-            success = customerService.updateEmail(customerId,email);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+    private boolean updateCustomerEmail(Scanner scanner) {
+        int customerId = -1;
+        boolean validInput = false;
+
+        // Loopa tills användaren matar in ett giltigt heltal
+        while (!validInput) {
+            System.out.println("Ange ID på den kund som ska uppdateras:");
+
+            String input = scanner.nextLine();
+
+            if (input.trim().isEmpty()) {
+                System.out.println("ID får inte lämnas tomt.");
+                continue;
+            }
+
+            try {
+                customerId = Integer.parseInt(input);
+                validInput = true;
+            } catch (NumberFormatException e) {
+                System.out.println("Felaktig inmatning. Ange ett numeriskt ID.");
+            }
         }
 
-        System.out.println(success ? "Email har uppdaterats." : "Kund hittades ej.");
+        Customer customer = customerService.getCustomerById(customerId);
+        if (customer == null) {
+            System.out.println("Kunden med ID: " + customerId + " finns inte.");
+            return false;
+        }
+
+        System.out.println("Ange din nya e-postadress:");
+        String email = scanner.nextLine();
+
+        boolean success = customerService.updateEmail(customerId, email);
+
+        System.out.println(success ? "Email har uppdaterats." : "Uppdateringen misslyckades.");
         return success;
     }
 
@@ -202,32 +222,27 @@ public class CustomerController extends UserController {
         System.out.println("Ange id:");
         int id = scanner.nextInt();
         scanner.nextLine();
-        Customer customer = null;
+        Customer customer = customerService.getCustomerById(id);
 
-        try {
-            customer = customerRepository.getCustomerById(id);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        if (customer == null) {
+            System.out.println("Ingen kund hittades med ID: " + id);
+        } else {
+            System.out.println("KundId: " + customer.getId());
+            System.out.println("Namn: " + customer.getName());
+            System.out.println("Email: " + customer.getEmail());
+            System.out.println("Lösenord : " + customer.getPassword());
+            System.out.println("Telefonnummer: " + customer.getPhone());
+            System.out.println("Adress: " + customer.getAddress());
+            System.out.println();
         }
-
-        System.out.println("KundId: " + customer.getId());
-        System.out.println("Namn: " + customer.getName());
-        System.out.println("Lösenord : " + customer.getPassword());
-        System.out.println("Email: " + customer.getEmail());
-        System.out.println("Adress: " + customer.getAddress());
-        System.out.println("Telefonnummer: " + customer.getPhone());
-
-        System.out.println();;
     }
 
 
-    private boolean deleteCustomer() {
+    private boolean deleteLoggedinCustomer() {
         boolean deleteSuccess = false;
-        try {
+
             deleteSuccess = customerService.deleteCustomer();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+
         System.out.println(deleteSuccess ? "Kund raderad " : "Kund hittades ej");
         SessionManager.getInstance().logout();
         if (mainController == null) {

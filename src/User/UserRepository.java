@@ -29,7 +29,7 @@ public class UserRepository {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Fel vid körning av inloggningsfrågan: " + e.getMessage());
         }
 
         return null;
