@@ -15,6 +15,12 @@ public class ProductService {
 
     // Sök produkt via namn
     public ArrayList<Product> getProductByName(String name) {
+
+        if (name == null || name.trim().isEmpty()) {
+            System.out.println("Produktnamn måste anges.");
+            return new ArrayList<>();
+        }
+
         ArrayList<Product> products = productRepository.getProductsByName(name);
 
         if (products == null || products.isEmpty()) {
@@ -29,6 +35,11 @@ public class ProductService {
 
 // Sök produkt via kategori
     public ArrayList<Product> getProductByCategory(String categoryName)  {
+
+        if (categoryName == null || categoryName.trim().isEmpty()) {
+            System.out.println("Kategori måste anges.");
+            return new ArrayList<>();
+        }
         ArrayList<Product> products = productRepository.getProductsByCategory(categoryName);
 
         if (products == null || products.isEmpty()) {
